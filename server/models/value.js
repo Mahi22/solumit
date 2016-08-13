@@ -16,10 +16,54 @@ const db = require('./database');
 
 //Define our model
 const valueSchema = db.define('value', {
-  timestamp: {
-    type: Sequelize.DATE,
+  imei: {
+    type: Sequelize.STRING,
     allowNull: false
-  }
+  },
+  timestamp: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
+  PV: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
+  PI: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
+  GV: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
+  GR: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
+  GY: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
+  GB: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
+  IV: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
+  IR: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
+  IY: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
+  IB: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
 });
 
 // //Export the model

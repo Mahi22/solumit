@@ -22,8 +22,6 @@ module.exports = function (app) {
 
   app.post('/signup', jsonParser, Authentication.signup);
 
-  app.post('/collect', urlencodedParser, function (req, res, next) {
-    console.log(req.body);
-    res.send('done');
-  });
-};
+  app.post('/collect', urlencodedParser, Data.collect);
+
+}

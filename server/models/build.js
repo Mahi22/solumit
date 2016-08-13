@@ -18,24 +18,9 @@ function formatDate(stringValue) {
 
 
 //Synchronise the table
-db.sync({ force: true }).then(() => {
-  User.create({
-    email: 'xyz@example.com',
-    password: '123'
-  })
-  .then(user => {
-    user.createDevice({
-      address: '123, test address',
-      imei: '123456789012345',
-      latitude: 12.34,
-      longitude: 12.45,
-      location: 'office',
-      userName: 'Prashant',
-      userEmail: 'xyz@test.com'
-    })
+db.sync().then(() => {
 
-  });
-
+  console.log('Database Initiated');
 
 });
 

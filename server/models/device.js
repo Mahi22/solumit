@@ -46,20 +46,5 @@ const deviceSchema = db.define('device', {
   }
 });
 
-// deviceSchema.hasOne(User);
-// User.hasMany(deviceSchema);
-
-// User.hasMany(deviceSchema);
-// deviceSchema.belongsTo(User);
-
-//Synchronise the table
-// db.sync({force: true})
-// .then(() => {
-//   console.log('created device table');
-// })
-// .catch(function(error){
-//   // console.log(error);
-// });
-
 // //Export the model
 module.exports = db.models.device;
