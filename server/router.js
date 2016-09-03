@@ -24,4 +24,5 @@ module.exports = function (app) {
 
   app.post('/collect', urlencodedParser, Data.collect);
 
+  app.post('/test', urlencodedParser, Data.newCollect);
 }

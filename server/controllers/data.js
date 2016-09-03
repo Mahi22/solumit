@@ -19,3 +19,7 @@ exports.collect = function (req, res, next) {
   }
 
 }
+
+exports.newCollect = function (req, res, next) {
+  console.log(req.body);
+}
