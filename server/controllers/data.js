@@ -22,5 +22,18 @@ exports.collect = function (req, res, next) {
 
 exports.newCollect = function (req, res, next) {
   console.log(req.body);
-  res.send('recieved data');
+  const {
+    imei, timestamp, data
+  } = req.body;
+
+  // Data values for data stringValues
+
+  // 0-2 = GV grid
+  // 3-5 = GI grid   decimal with points on units place eg: 00.1
+  // 6-8 = PV solar
+  // 9-11 = PI solar decimal with points on units place eg: 00.1
+  // 12-14 = OV output
+  // 15-17 = OR output decimanl with points on units place
+  // 18-20 = OY "-"
+  // 21-23 = OB "-"
 }
