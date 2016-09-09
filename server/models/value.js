@@ -24,27 +24,19 @@ const valueSchema = db.define('value', {
     type: Sequelize.STRING,
     allowNull: false
   },
-  PV: {
-    type: Sequelize.STRING,
-    allowNull: false
-  },
-  PI: {
-    type: Sequelize.STRING,
-    allowNull: false
-  },
   GV: {
     type: Sequelize.STRING,
     allowNull: false
   },
-  GR: {
+  GC: {
     type: Sequelize.STRING,
     allowNull: false
   },
-  GY: {
+  PV: {
     type: Sequelize.STRING,
     allowNull: false
   },
-  GB: {
+  PC: {
     type: Sequelize.STRING,
     allowNull: false
   },
@@ -64,6 +56,10 @@ const valueSchema = db.define('value', {
     type: Sequelize.STRING,
     allowNull: false
   },
+  data: {
+    type: Sequelize.STRING,
+    allowNull: false
+  }
 });
 
 // //Export the model

@@ -2,12 +2,22 @@ const Value = require('../models/value');
 
 exports.collect = function (req, res, next) {
   const {
-    imei,timestamp,PV,PI,GV,GR,GY,GB,IV,IR,IY,IB
+    imei,timestamp,data
   } = req.body;
 
   if(imei && timestamp) {
+    const arr = data.match(/.{1,3}/g);
+    const GV = arr[0],
+          GC = arr[1],
+          PV = arr[2],
+          PC = arr[3],
+          IV = arr[4],
+          IR = arr[5],
+          IY = arr[6],
+          IB = arr[7];
+
     Value.create({
-      imei,timestamp,PV,PI,GV,GR,GY,GB,IV,IR,IY,IB
+      imei,timestamp, GV, GC, PV, PC, IV, IR, IY, IB, data
     }).then(value => {
       console.log(value);
       res.send('successfully posted');
