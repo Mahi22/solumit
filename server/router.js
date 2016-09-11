@@ -1,6 +1,7 @@
 const _build = require('./models/build');
 const Authentication = require('./controllers/authentication');
 const Data = require('./controllers/data');
+const Excel = require('./controllers/excel');
 
 const bodyParse = require('body-parser');
 const passport = require('passport');
@@ -25,4 +26,6 @@ module.exports = function (app) {
   app.post('/collect', urlencodedParser, Data.collect);
 
   app.post('/test', urlencodedParser, Data.newCollect);
+
+  app.get('/excel', urlencodedParser, Excel.excelData);
 }

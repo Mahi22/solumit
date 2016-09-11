@@ -19,9 +19,7 @@ function formatDate(stringValue) {
 
 //Synchronise the table
 db.sync().then(() => {
-
   console.log('Database Initiated');
-
 });
 
 //
@@ -34,3 +32,17 @@ db.sync().then(() => {
   // userName: 'Prashant',
   // userEmail: 'xyz@test.com'
 // });
+
+// Value.create({
+//   imei: '353173066407352',
+//   timestamp: '16/09/11,03:11:16',
+//   GV: '819',
+//   GC: '819',
+//   PV: '819',
+//   PC: '819',
+//   IV: '819',
+//   IR: '819',
+//   IY: '819',
+//   IB: '819',
+//   data: '819819819819819819819819'
+// })
