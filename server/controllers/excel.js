@@ -93,22 +93,16 @@ const specification = {
     cellStyle: styles.cellPink, // <- Cell style
     width: 60 // <- width in pixels
   },
-  IR: {
-    displayName: 'IR',
-    headerStyle: styles.headerDark,
-    cellStyle: styles.cellGreen, // <- Cell style
-    width: 60 // <- width in pixels
-  },
   IY: {
     displayName: 'IY',
     headerStyle: styles.headerDark,
-    cellStyle: styles.cellPink, // <- Cell style
+    cellStyle: styles.cellGreen, // <- Cell style
     width: 60 // <- width in pixels
   },
   IB: {
     displayName: 'IB',
     headerStyle: styles.headerDark,
-    cellStyle: styles.cellGreen, // <- Cell style
+    cellStyle: styles.cellPink, // <- Cell style
     width: 60 // <- width in pixels
   }
 }
