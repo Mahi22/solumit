@@ -47,3 +47,18 @@ exports.newCollect = function (req, res, next) {
   // 18-20 = OY "-"
   // 21-23 = OB "-"
 }
+
+exports.dayData = function (req, res, next) {
+  const {imei, date} = req.query;
+
+  Value.findAll({
+    where: {
+      imei,
+      timestamp: {
+        $like: `${date}%`
+      }
+    }
+  }).then( values => {
+    return res.send(values);
+  });
+}

@@ -27,5 +27,7 @@ module.exports = function (app) {
 
   app.post('/test', urlencodedParser, Data.newCollect);
 
+  app.get('/day', urlencodedParser, Data.dayData);
+
   app.get('/excel', urlencodedParser, Excel.excelData);
 }
