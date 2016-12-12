@@ -62,3 +62,15 @@ exports.dayData = function (req, res, next) {
     return res.send(values);
   });
 }
+
+exports.allData = function (req, res, next) {
+  const {imei, date} = req.query;
+
+  Value.findAll({
+    where: {
+      imei
+    }
+  }).then( values => {
+    return res.send(values);
+  });
+}

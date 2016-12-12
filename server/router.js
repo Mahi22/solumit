@@ -30,4 +30,6 @@ module.exports = function (app) {
   app.get('/day', urlencodedParser, Data.dayData);
 
   app.get('/excel', urlencodedParser, Excel.excelData);
+
+  app.get('/all', urlencodedParser, Data.allData);
 }
