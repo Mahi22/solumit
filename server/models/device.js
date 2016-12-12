@@ -29,12 +29,24 @@ const deviceSchema = db.define('device', {
     type: Sequelize.STRING,
     allowNull: false
   },
-  userEmail: {
+  email: {
     type: Sequelize.STRING,
     allowNull: false,
     validate: {
       isEmail: true
     }
+  },
+  lastTimestamp: {
+    type: Sequelize.STRING,
+  },
+  collectiveSolarUnits: {
+    type: Sequelize.FLOAT
+  },
+  collectiveGridUnits: {
+    type: Sequelize.FLOAT
+  },
+  collectiveTotalUnits: {
+    type: Sequelize.FLOAT
   }
 }, {
   validate: {

@@ -3,11 +3,11 @@ const Device = require('./device');
 const User = require('./user');
 const Value = require('./value');
 //Relationships
-User.hasMany(Device);
-Device.belongsTo(User);
+User.hasMany(Device, { foreignKey: 'userId' });
+// Device.belongsTo(User);
 // Device.hasOne(User);
 Device.hasMany(Value);
-Value.belongsTo(Device);
+// Value.belongsTo(Device);
 
 function formatDate(stringValue) {
   // new Date(year, month, day, hours, minutes, seconds, milliseconds)
@@ -18,7 +18,7 @@ function formatDate(stringValue) {
 
 
 //Synchronise the table
-db.sync().then(() => {
+db.sync({ force: true }).then(() => {
   console.log('Database Initiated');
 });
 
