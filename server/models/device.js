@@ -25,17 +25,20 @@ const deviceSchema = db.define('device', {
     defaultValue: null,
     validate: { min: -180, max: 180 }
   },
-  userName: {
+  username: {
     type: Sequelize.STRING,
     allowNull: false
   },
-  userEmail: {
-    type: Sequelize.STRING,
-    allowNull: false,
-    validate: {
-      isEmail: true
-    }
+  solarUnits: {
+    type: Sequelize.FLOAT
+  },
+  gridUnits: {
+    type: Sequelize.FLOAT
+  },
+  totalUnits: {
+    type: Sequelize.FLOAT
   }
+
 }, {
   validate: {
     bothCoordsOrNone: function() {

@@ -12,7 +12,7 @@ const userSchema = db.define('user', {
   password: {
     type: Sequelize.STRING,
     allowNull: false
-  },
+  }
 
 }, {
   instanceMethods: {

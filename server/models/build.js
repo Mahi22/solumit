@@ -2,12 +2,17 @@ const db = require('./database');
 const Device = require('./device');
 const User = require('./user');
 const Value = require('./value');
+
+// const data = require('./data.json');
+
+
+
 //Relationships
-User.hasMany(Device);
+// User.hasMany(Device);
 Device.belongsTo(User);
 // Device.hasOne(User);
 Device.hasMany(Value);
-Value.belongsTo(Device);
+// Value.belongsTo(Device);
 
 function formatDate(stringValue) {
   // new Date(year, month, day, hours, minutes, seconds, milliseconds)
@@ -16,11 +21,36 @@ function formatDate(stringValue) {
   return new Date(`20${dateParts[1]}`, dateParts[2]-1, dateParts[3], dateParts[4], dateParts[5], dateParts[6]);
 }
 
-
 //Synchronise the table
 db.sync().then(() => {
-  console.log('Database Initiated');
+  // data.forEach((row, index) => {
+  //   const {
+  //     imei,timestamp,data
+  //   } = row;
+  //
+  //   if(imei && timestamp && data) {
+  //     const arr = data.match(/.{1,3}/g);
+  //     const GV = arr[0],
+  //           GC = arr[1],
+  //           PV = arr[2],
+  //           PC = arr[3],
+  //           IV = arr[4],
+  //           IR = arr[5],
+  //           IY = arr[6],
+  //           IB = arr[7];
+  //
+  //     Value.create({
+  //       imei,timestamp, GV, GC, PV, PC, IV, IR, IY, IB, data
+  //     }).then(value => {
+  //       // res.send('successfully posted');
+  //     })
+  //     .catch((err) => {
+  //       // res.send('Could not post in database');
+  //     });
+  //   }
+  // });
 });
+
 
 //
 // Device.create({

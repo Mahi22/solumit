@@ -1,10 +1,11 @@
 const config = require('../config');
 const jwt = require('jwt-simple');
 const User = require('../models/user');
+const Device = require('../models/device');
 
-function tokenForUser(user) {
+function tokenForUser(user, imei) {
   const timestamp = new Date().getTime();
-  return jwt.encode({ sub: user.id, iat: timestamp }, config.secret);
+  return jwt.encode({ sub: user.id, iat: timestamp, imei  }, config.secret);
 }
 
 exports.test = function (req, res, next) {
@@ -19,7 +20,34 @@ exports.test = function (req, res, next) {
 exports.signin = function (req, res, next) {
   //User here had already had their email and password auth'd
   //we just need to give them token
-  res.send({ token: tokenForUser(req.user) });
+  Device.findAll({
+    where : {
+      userId : req.user.id
+    }
+  })
+  .then( devices => {
+    if (devices.length === 1) {
+      res.send({ status: true, token: tokenForUser(req.user, devices[0].imei)});
+    }else {
+      res.send({ status: true, message: 'currently no multiple devices supported' });
+    }
+  });
+
+};
+
+exports.checkemail = function (req, res, next) {
+  const email = req.body.email;
+
+  User.findOne({  where: {email} })
+  .then(function(user) {
+
+    if (user) {
+      res.json({ status: true, message: 'success' });
+    } else {
+      res.status(422).send({ status: false, message: 'not found' });
+    }
+
+  });
 };
 
 exports.signup = function (req, res, next) {
