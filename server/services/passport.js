@@ -49,7 +49,8 @@ const localLogin = new LocalStrategy(localOptions, function (email, password, do
 
 //Setup options for JWT Strategy
 const jwtOptions = {
-  jwtFromRequest: ExtractJwt.fromHeader('authorization'),
+  // jwtFromRequest: ExtractJwt.fromHeader('authorization'),
+  jwtFromRequest: ExtractJwt.fromBodyField('token'),
   secretOrKey: config.secret,
 };
 
@@ -58,14 +59,17 @@ const jwtLogin = new JwtStrategy(jwtOptions, function (payload, done) {
     //See if the user ID in the payload exists in our database
     //If it does,  call 'done' with that user
     //otherwise, call done without a user object
-    User.findById(payload.sub, function (err, user) {
-      if (err) { return done(err, false); }
 
+    User.findById(payload.sub)
+    .then(function (user) {
       if (user) {
         done(null, user);
       } else {
         done(null, false);
       }
+    })
+    .catch((err) => {
+      if (err) { console.log(err); return done(err, false); }
     });
   });
 

@@ -21,7 +21,8 @@ rule.hour = 0;  // Hour at which to run
 rule.minute = 0; // Minute at which to run
 
 const j = schedule.scheduleJob(rule, function(){
-  console.log('The answer to life, the universe, and everything!');
+  // console.log('The answer to life, the universe, and everything!');
+  Data.overallDataCronJob();
 });
 
 
@@ -32,6 +33,8 @@ module.exports = function (app) {
   });
 
   app.post('/signin', jsonParser, requireSignin, Authentication.signin);
+
+  app.post('/signintoken', jsonParser, requireAuth, Authentication.signintoken);
 
   app.post('/checkemail', jsonParser, Authentication.checkemail);
 

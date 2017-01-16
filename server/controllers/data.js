@@ -121,3 +121,59 @@ exports.overallData = function (req, res, next) {
     });
   });
 }
+
+exports.overallDataCronJob = function () {
+  console.log('Calling Function to build overallData');
+
+
+  function buildData(imei) {
+    let solarUnits = 0,
+        gridUnits = 0,
+        totalUnits = 0;
+
+    Value.findAll({
+      where: {
+        imei
+      }
+    }).then( values => {
+
+      values.forEach((d, index) => {
+        if (!isNaN(parseInt(d.IV)) && !isNaN(parseInt(d.IR)) && !isNaN(parseInt(d.IY)) && !isNaN(parseInt(d.IB))) {
+          totalUnits += ((parseInt(d.IV) * (parseInt(d.IR) + parseInt(d.IY) + parseInt(d.IB))) / 1000);
+        }
+
+        if (!isNaN(parseInt(d.PV)) && !isNaN(parseInt(d.PC))) {
+          solarUnits += (parseInt(d.PV) * parseInt(d.PC)) / 1000;
+        }
+
+        if (!isNaN(parseInt(d.GV)) && !isNaN(parseInt(d.GC))) {
+          gridUnits += (d.GV * d.GC) / 1000;
+        }
+      });
+
+      totalUnits = (totalUnits / 60).toFixed(2);
+      solarUnits = (solarUnits / 60).toFixed(2);
+      gridUnits = (gridUnits / 60).toFixed(2);
+
+      console.log({totalUnits, solarUnits, gridUnits});
+      Device.update(
+        { solarUnits, gridUnits, totalUnits },
+        { where: { imei } }
+      )
+      .then(result => {
+        console.log('Updated');
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    });
+  }
+
+
+  Device.findAll()
+  .then( devices => {
+    devices.forEach(device => {
+      buildData(device.dataValues.imei);
+    })
+  });
+}

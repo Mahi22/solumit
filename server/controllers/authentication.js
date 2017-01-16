@@ -26,14 +26,28 @@ exports.signin = function (req, res, next) {
     }
   })
   .then( devices => {
-    if (devices.length === 1) {
-      res.send({ status: true, token: tokenForUser(req.user, devices[0].imei)});
-    }else {
-      res.send({ status: true, message: 'currently no multiple devices supported' });
+    if (devices) {
+      if (devices.length === 1) {
+        res.send({ status: true, token: tokenForUser(req.user, devices[0].imei)});
+      }else {
+        res.send({ status: true, message: 'currently no multiple devices supported' });
+      }
+    } else {
+
     }
   });
 
 };
+
+exports.signintoken = function (req, res, next) {
+  console.log(req.user.dataValues);
+  if (req.user) {
+    res.send({email: req.user.dataValues.email});
+  }else {
+    res.send("no success");
+  }
+
+}
 
 exports.checkemail = function (req, res, next) {
   const email = req.body.email;
