@@ -17,8 +17,8 @@ const urlencodedParser = bodyParse.urlencoded({ extended: false });
 const schedule = require('node-schedule');
 
 const rule = new schedule.RecurrenceRule();
-rule.hour = 0;  // Hour at which to run
-rule.minute = 0; // Minute at which to run
+rule.hour = 15;  // Hour at which to run
+rule.minute = 11; // Minute at which to run
 
 const j = schedule.scheduleJob(rule, function(){
   // console.log('The answer to life, the universe, and everything!');
@@ -39,6 +39,8 @@ module.exports = function (app) {
   app.post('/checkemail', jsonParser, Authentication.checkemail);
 
   app.post('/signup', jsonParser, Authentication.signup);
+
+  app.post('/signout', jsonParser, Authentication.signout);
 
   app.post('/collect', urlencodedParser, Data.collect);
 

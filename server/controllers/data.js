@@ -1,5 +1,7 @@
 const Value = require('../models/value');
 const Device = require('../models/device');
+const moment = require('moment');
+
 
 exports.collect = function (req, res, next) {
   const {
@@ -26,7 +28,8 @@ exports.collect = function (req, res, next) {
     .catch((err) => {
       console.log(err);
       res.send('Could not post in database');
-    })
+    });
+
   }
 
 }
@@ -77,30 +80,38 @@ exports.allData = function (req, res, next) {
 }
 
 exports.overallData = function (req, res, next) {
-  const {imei} = req.query;
+  const {imei, date} = req.query;
 
   let solarUnits = 0,
       gridUnits = 0,
       totalUnits = 0;
+
+  let solarPotentialLost = 0;
 
   Value.findAll({
     where: {
       imei
     }
   }).then( values => {
-    console.log(values);
 
     values.forEach((d, index) => {
-      if (!isNaN(parseInt(d.IV)) && !isNaN(parseInt(d.IR)) && !isNaN(parseInt(d.IY)) && !isNaN(parseInt(d.IB))) {
-        totalUnits += ((parseInt(d.IV) * (parseInt(d.IR) + parseInt(d.IY) + parseInt(d.IB))) / 1000);
-      }
 
-      if (!isNaN(parseInt(d.PV)) && !isNaN(parseInt(d.PC))) {
-        solarUnits += (parseInt(d.PV) * parseInt(d.PC)) / 1000;
-      }
+      if (moment(date, 'YY/MM/DD').diff(moment(d.timestamp, 'YY/MM/DD,hh:mm:ss'), 'minutes') < 0){
+        if (parseInt(d.PC) >= 5) {
+          if (!isNaN(parseInt(d.IV)) && !isNaN(parseInt(d.IR)) && !isNaN(parseInt(d.IY)) && !isNaN(parseInt(d.IB))) {
+            totalUnits += ((parseInt(d.IV) * (parseInt(d.IR) + parseInt(d.IY) + parseInt(d.IB))) / 1000);
+          }
 
-      if (!isNaN(parseInt(d.GV)) && !isNaN(parseInt(d.GC))) {
-        gridUnits += (d.GV * d.GC) / 1000;
+          if (!isNaN(parseInt(d.PV)) && !isNaN(parseInt(d.PC))) {
+            solarUnits += (parseInt(d.PV) * parseInt(d.PC)) / 1000;
+          }
+
+          if (!isNaN(parseInt(d.GV)) && !isNaN(parseInt(d.GC))) {
+            gridUnits += (d.GV * d.GC) / 1000;
+          }
+        } else {
+          solarPotentialLost += 1;
+        }
       }
     });
 
@@ -110,7 +121,7 @@ exports.overallData = function (req, res, next) {
 
     // res.send({totalUnits, solarUnits, gridUnits});
     Device.update(
-      { solarUnits, gridUnits, totalUnits },
+      { solarUnits, gridUnits, totalUnits, solarPotentialLost },
       { where: { imei } }
     )
     .then(result => {
@@ -123,13 +134,12 @@ exports.overallData = function (req, res, next) {
 }
 
 exports.overallDataCronJob = function () {
-  console.log('Calling Function to build overallData');
 
-
-  function buildData(imei) {
+  function buildData(imei, date) {
     let solarUnits = 0,
         gridUnits = 0,
-        totalUnits = 0;
+        totalUnits = 0,
+        solarPotentialLost = 0;
 
     Value.findAll({
       where: {
@@ -138,16 +148,22 @@ exports.overallDataCronJob = function () {
     }).then( values => {
 
       values.forEach((d, index) => {
-        if (!isNaN(parseInt(d.IV)) && !isNaN(parseInt(d.IR)) && !isNaN(parseInt(d.IY)) && !isNaN(parseInt(d.IB))) {
-          totalUnits += ((parseInt(d.IV) * (parseInt(d.IR) + parseInt(d.IY) + parseInt(d.IB))) / 1000);
-        }
+        if (moment(date, 'YY/MM/DD').diff(moment(d.timestamp, 'YY/MM/DD,hh:mm:ss'), 'minutes') < 0 ){
+          if (parseInt(d.PC) >= 5) {
+            if (!isNaN(parseInt(d.IV)) && !isNaN(parseInt(d.IR)) && !isNaN(parseInt(d.IY)) && !isNaN(parseInt(d.IB))) {
+              totalUnits += ((parseInt(d.IV) * (parseInt(d.IR) + parseInt(d.IY) + parseInt(d.IB))) / 1000);
+            }
 
-        if (!isNaN(parseInt(d.PV)) && !isNaN(parseInt(d.PC))) {
-          solarUnits += (parseInt(d.PV) * parseInt(d.PC)) / 1000;
-        }
+            if (!isNaN(parseInt(d.PV)) && !isNaN(parseInt(d.PC))) {
+              solarUnits += (parseInt(d.PV) * parseInt(d.PC)) / 1000;
+            }
 
-        if (!isNaN(parseInt(d.GV)) && !isNaN(parseInt(d.GC))) {
-          gridUnits += (d.GV * d.GC) / 1000;
+            if (!isNaN(parseInt(d.GV)) && !isNaN(parseInt(d.GC))) {
+              gridUnits += (d.GV * d.GC) / 1000;
+            }
+          } else {
+            solarPotentialLost += 1;
+          }
         }
       });
 
@@ -155,9 +171,8 @@ exports.overallDataCronJob = function () {
       solarUnits = (solarUnits / 60).toFixed(2);
       gridUnits = (gridUnits / 60).toFixed(2);
 
-      console.log({totalUnits, solarUnits, gridUnits});
       Device.update(
-        { solarUnits, gridUnits, totalUnits },
+        { solarUnits, gridUnits, totalUnits, solarPotentialLost },
         { where: { imei } }
       )
       .then(result => {
@@ -173,7 +188,7 @@ exports.overallDataCronJob = function () {
   Device.findAll()
   .then( devices => {
     devices.forEach(device => {
-      buildData(device.dataValues.imei);
+      buildData(device.dataValues.imei, device.dataValues.calculateFromDate);
     })
   });
 }

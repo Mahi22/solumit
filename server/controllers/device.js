@@ -14,13 +14,13 @@ function decodeToken(token) {
 
 exports.createdevice = function (req, res, next) {
   const {
-    imei, address, latitude, longitude, username
+    imei, address, latitude, longitude, username, calculateFromDate
   } = req.body;
 
   if(imei) {
 
     Device.create({
-      imei, address, latitude, longitude, username
+      imei, address, latitude, longitude, username, calculateFromDate
     }).then(device => {
       res.send({ token: tokenForUser(device.dataValues) });
     })
@@ -55,25 +55,32 @@ exports.createuser = function (req, res, next) {
 
   const {sub, iat} = decodeToken(token);
 
-  console.log(moment().diff(iat, 'minutes'));
+  // console.log(moment().diff(iat, 'minutes'));
 
-  if (sub && moment().diff(iat, 'days') < 1) {
+  if (sub && moment().diff(iat, 'days') < 2) {
     Device.findOne({
       where: {
         imei: sub
       }
-    }).then( device => device.createUser({
-        email,
-        password
-      }))
-    .then( user => {
-      res.send('success');
+    }).then( device => {
+      if (device.users < 5) {
+        return device.createUser({
+            email,
+            password
+        });
+      } else {
+        res.send('maxusers');
+      }
+    })
+    .then( device => {
+      device.increment('users');
+      res.send({ token: tokenForUser(device.dataValues), email });
     })
     .catch(err => {
       if (err.errors[0].message === 'email must be unique') {
-        res.send('Email already in use');
+        res.send('emailInUse');
       }
-      res.send('Some Error faced');
+      res.send('error');
     });
   } else {
     res.send('Invalid Token');
@@ -88,8 +95,8 @@ exports.overallData = function (req, res, next) {
       imei
     }
   }).then( device => {
-    const { solarUnits, gridUnits, totalUnits } = device;
-    res.send({ solarUnits, gridUnits, totalUnits });
+    const { solarUnits, gridUnits, totalUnits, solarPotentialLost } = device;
+    res.send({ solarUnits, gridUnits, totalUnits, solarPotentialLost });
   })
   .catch(err => {
     res.send('Some Error faced');

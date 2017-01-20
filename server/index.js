@@ -5,10 +5,12 @@ const morgan = require('morgan');
 const app = express();
 const router = require('./router');
 const cors = require('cors');
+const device = require('express-device');
 
 //App Setup
 app.use(morgan('combined'));
 app.use(cors());
+app.use(device.capture());
 // app.use(bodyParse.json({ type: '*/*' }));
 router(app);
 

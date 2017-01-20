@@ -5,7 +5,7 @@ const Device = require('../models/device');
 
 function tokenForUser(user, imei) {
   const timestamp = new Date().getTime();
-  return jwt.encode({ sub: user.id, iat: timestamp, imei  }, config.secret);
+  return jwt.encode({ sub: user.id, iat: timestamp, imei, logins: user.logins  }, config.secret);
 }
 
 exports.test = function (req, res, next) {
@@ -20,6 +20,9 @@ exports.test = function (req, res, next) {
 exports.signin = function (req, res, next) {
   //User here had already had their email and password auth'd
   //we just need to give them token
+
+  // const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
   Device.findAll({
     where : {
       userId : req.user.id
@@ -40,7 +43,6 @@ exports.signin = function (req, res, next) {
 };
 
 exports.signintoken = function (req, res, next) {
-  console.log(req.user.dataValues);
   if (req.user) {
     res.send({email: req.user.dataValues.email});
   }else {
@@ -90,3 +92,7 @@ exports.signup = function (req, res, next) {
     }
   });
 };
+
+exports.signout = function (req, res, next) {
+  res.send('Success');
+}

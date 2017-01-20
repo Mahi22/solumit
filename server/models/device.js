@@ -37,8 +37,17 @@ const deviceSchema = db.define('device', {
   },
   totalUnits: {
     type: Sequelize.FLOAT
+  },
+  solarPotentialLost: {
+    type: Sequelize.FLOAT
+  },
+  users: {
+    type: Sequelize.INTEGER,
+    defaultValue: 0
+  },
+  calculateFromDate: {
+    type: Sequelize.STRING
   }
-
 }, {
   validate: {
     bothCoordsOrNone: function() {
