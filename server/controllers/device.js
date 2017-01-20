@@ -63,7 +63,7 @@ exports.createuser = function (req, res, next) {
         imei: sub
       }
     }).then( device => {
-      if (device.users < 5) {
+      if (device.users < 9) {
         return device.createUser({
             email,
             password
