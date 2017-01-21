@@ -47,6 +47,9 @@ const deviceSchema = db.define('device', {
   },
   calculateFromDate: {
     type: Sequelize.STRING
+  },
+  startDate: {
+    type: Sequelize.STRING
   }
 }, {
   validate: {

@@ -31,7 +31,7 @@ exports.signin = function (req, res, next) {
   .then( devices => {
     if (devices) {
       if (devices.length === 1) {
-        res.send({ status: true, token: tokenForUser(req.user, devices[0].imei)});
+        res.send({ status: true, email: req.user.email, token: tokenForUser(req.user, devices[0].imei), username: devices[0].username, calibratedDate: devices[0].calculateFromDate});
       }else {
         res.send({ status: true, message: 'currently no multiple devices supported' });
       }
@@ -44,7 +44,24 @@ exports.signin = function (req, res, next) {
 
 exports.signintoken = function (req, res, next) {
   if (req.user) {
-    res.send({email: req.user.dataValues.email});
+    // res.send({email: req.user.dataValues.email});
+    Device.findAll({
+      where : {
+        userId : req.user.id
+      }
+    })
+    .then( devices => {
+      if (devices) {
+        if (devices.length === 1) {
+          res.send({ status: true, email: req.user.email, username: devices[0].username, calibratedDate: devices[0].calculateFromDate});
+        }else {
+          res.send({ status: true, message: 'currently no multiple devices supported' });
+        }
+      } else {
+
+      }
+    });
+
   }else {
     res.send("no success");
   }

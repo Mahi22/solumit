@@ -74,7 +74,7 @@ exports.createuser = function (req, res, next) {
     })
     .then( device => {
       device.increment('users');
-      res.send({ token: tokenForUser(device.dataValues), email });
+      res.send({ token: tokenForUser(device.dataValues), email, username: device.dataValues.username, calibratedDate: device.dataValues.calculateFromDate });
     })
     .catch(err => {
       if (err.errors[0].message === 'email must be unique') {
