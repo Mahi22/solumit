@@ -19,16 +19,18 @@ exports.collect = function (req, res, next) {
           IY = arr[6],
           IB = arr[7];
 
-    Value.create({
-      imei,timestamp, GV, GC, PV, PC, IV, IR, IY, IB, data
-    }).then(value => {
-      console.log(value);
-      res.send('successfully posted');
-    })
-    .catch((err) => {
-      console.log(err);
-      res.send('Could not post in database');
-    });
+    if (parseInt(PV) > 400) {
+      Value.create({
+        imei,timestamp, GV, GC, PV, PC, IV, IR, IY, IB, data
+      }).then(value => {
+        console.log(value);
+        res.send('successfully posted');
+      })
+      .catch((err) => {
+        console.log(err);
+        res.send('Could not post in database');
+      });
+    }
 
   }
 
@@ -71,8 +73,6 @@ exports.dayToken = function (req, res, next) {
   // const {imei, date} = req.query;
   const imei = req.user.dataValues.imei;
   const date = req.body.date;
-
-  console.log('CALLING DAY TOKEN', imei, date);
 
   Value.findAll({
     where: {
