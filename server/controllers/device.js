@@ -102,3 +102,21 @@ exports.overallData = function (req, res, next) {
     res.send('Some Error faced');
   });
 }
+
+exports.overallDataToken = function (req, res, next) {
+  // const {imei} = req.query;
+
+  const imei = req.user.dataValues.imei;
+
+  Device.findOne({
+    where: {
+      imei
+    }
+  }).then( device => {
+    const { solarUnits, gridUnits, totalUnits, solarPotentialLost } = device;
+    res.send({ solarUnits, gridUnits, totalUnits, solarPotentialLost });
+  })
+  .catch(err => {
+    res.send('Some Error faced');
+  });
+}

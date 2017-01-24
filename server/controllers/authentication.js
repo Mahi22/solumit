@@ -45,15 +45,17 @@ exports.signin = function (req, res, next) {
 exports.signintoken = function (req, res, next) {
   if (req.user) {
     // res.send({email: req.user.dataValues.email});
+
+    // req.user.increment("logins");
     Device.findAll({
       where : {
-        userId : req.user.id
+        userId : req.user.dataValues.id
       }
     })
     .then( devices => {
       if (devices) {
         if (devices.length === 1) {
-          res.send({ status: true, email: req.user.email, username: devices[0].username, calibratedDate: devices[0].calculateFromDate});
+          res.send({ status: true, email: req.user.dataValues.email, username: devices[0].username, calibratedDate: devices[0].calculateFromDate});
         }else {
           res.send({ status: true, message: 'currently no multiple devices supported' });
         }

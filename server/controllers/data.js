@@ -67,6 +67,25 @@ exports.dayData = function (req, res, next) {
   });
 }
 
+exports.dayToken = function (req, res, next) {
+  // const {imei, date} = req.query;
+  const imei = req.user.dataValues.imei;
+  const date = req.body.date;
+
+  console.log('CALLING DAY TOKEN', imei, date);
+
+  Value.findAll({
+    where: {
+      imei,
+      timestamp: {
+        $like: `${date}%`
+      }
+    }
+  }).then( values => {
+    return res.send(values);
+  });
+}
+
 exports.allData = function (req, res, next) {
   const {imei, date} = req.query;
 

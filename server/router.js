@@ -54,6 +54,8 @@ module.exports = function (app) {
 
   app.get('/day', urlencodedParser, Data.dayData);
 
+  app.post('/daytoken', jsonParser, requireAuth, Data.dayToken);
+
   app.get('/excel', urlencodedParser, Excel.excelData);
 
   app.get('/all', urlencodedParser, Data.allData);
@@ -61,4 +63,6 @@ module.exports = function (app) {
   app.get('/overallcreate', urlencodedParser, Data.overallData);
 
   app.get('/overalldata', urlencodedParser, Device.overallData);
+
+  app.post('/overalldatatoken', jsonParser, requireAuth, Device.overallDataToken);
 }

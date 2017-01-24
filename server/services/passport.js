@@ -40,7 +40,7 @@ const localLogin = new LocalStrategy(localOptions, function (email, password, do
 
         user.increment("logins");
 
-        return done(null, user.dataValues);
+        return done(null, user);
     });
 
   })
@@ -65,6 +65,7 @@ const jwtLogin = new JwtStrategy(jwtOptions, function (payload, done) {
     User.findById(payload.sub)
     .then(function (user) {
       if (user && user.dataValues.logins === payload.logins) {
+        user.dataValues.imei = payload.imei;
         done(null, user);
       } else {
         done(null, false);
