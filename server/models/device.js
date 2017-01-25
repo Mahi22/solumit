@@ -41,6 +41,12 @@ const deviceSchema = db.define('device', {
   solarPotentialLost: {
     type: Sequelize.FLOAT
   },
+  solarPotentialUnused: {
+    type: Sequelize.FLOAT
+  },
+  totalPowerFailure: {
+    type: Sequelize.FLOAT
+  },
   users: {
     type: Sequelize.INTEGER,
     defaultValue: 0
