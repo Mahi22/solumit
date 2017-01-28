@@ -61,11 +61,13 @@ const jwtLogin = new JwtStrategy(jwtOptions, function (payload, done) {
     //See if the user ID in the payload exists in our database
     //If it does,  call 'done' with that user
     //otherwise, call done without a user object
-
+    console.log("I'm HERE ATLEASTTTT");
+    console.log(payload);
     User.findById(payload.sub)
     .then(function (user) {
       if (user && user.dataValues.logins === payload.logins) {
         user.dataValues.imei = payload.imei;
+        console.log(user);
         done(null, user);
       } else {
         done(null, false);

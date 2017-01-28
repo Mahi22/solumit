@@ -23,6 +23,7 @@ exports.signin = function (req, res, next) {
 
   // const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
+
   Device.findAll({
     where : {
       userId : req.user.id
@@ -30,6 +31,8 @@ exports.signin = function (req, res, next) {
   })
   .then( devices => {
     if (devices) {
+      console.log(devices);
+
       if (devices.length === 1) {
         res.send({ status: true, email: req.user.email, token: tokenForUser(req.user, devices[0].imei), username: devices[0].username, calibratedDate: devices[0].calculateFromDate});
       }else {
@@ -43,6 +46,8 @@ exports.signin = function (req, res, next) {
 };
 
 exports.signintoken = function (req, res, next) {
+  console.log("Request reaching here");
+
   if (req.user) {
     // res.send({email: req.user.dataValues.email});
 
