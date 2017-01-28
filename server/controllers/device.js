@@ -63,10 +63,13 @@ exports.createuser = function (req, res, next) {
         imei: sub
       }
     }).then( device => {
+
+      console.log("ATLEAST TILL HERE");
       if (device.users < 9) {
         return device.createUser({
             email,
-            password
+            password,
+            imei: sub
         });
       } else {
         res.send('maxusers');

@@ -23,49 +23,42 @@ exports.signin = function (req, res, next) {
 
   // const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
-
-  Device.findAll({
+  Device.findOne({
     where : {
-      userId : req.user.id
+      imei : req.user.imei
     }
   })
-  .then( devices => {
-    if (devices) {
-      console.log(devices);
-
-      if (devices.length === 1) {
-        res.send({ status: true, email: req.user.email, token: tokenForUser(req.user, devices[0].imei), username: devices[0].username, calibratedDate: devices[0].calculateFromDate});
-      }else {
-        res.send({ status: true, message: 'currently no multiple devices supported' });
-      }
+  .then( device => {
+    if (device) {
+      res.send({ status: true, email: req.user.email, token: tokenForUser(req.user, device.imei), username: device.username, calibratedDate: device.calculateFromDate, startDate: device.startDate});
     } else {
-
+      res.send({ status: false, message: 'could not find user' });
     }
   });
 
 };
 
 exports.signintoken = function (req, res, next) {
-  console.log("Request reaching here");
 
   if (req.user) {
     // res.send({email: req.user.dataValues.email});
 
     // req.user.increment("logins");
-    Device.findAll({
+    Device.findOne({
       where : {
-        userId : req.user.dataValues.id
+        imei : req.user.dataValues.imei
       }
     })
-    .then( devices => {
-      if (devices) {
-        if (devices.length === 1) {
-          res.send({ status: true, email: req.user.dataValues.email, username: devices[0].username, calibratedDate: devices[0].calculateFromDate});
-        }else {
-          res.send({ status: true, message: 'currently no multiple devices supported' });
-        }
+    .then( device => {
+      if (device) {
+        res.send({ status: true, email: req.user.dataValues.email, token: tokenForUser(req.user, device.imei), username: device.username, calibratedDate: device.calculateFromDate, startDate: device.startDate});
       } else {
-
+        res.send({ status: false, message: 'could not find user' });
+      }
+    })
+    .catch(function (error) {
+      if(error) {
+        res.status(422).send({ error: 'Some Error in database entry, Please contact the provider'});
       }
     });
 
@@ -87,6 +80,10 @@ exports.checkemail = function (req, res, next) {
       res.status(422).send({ status: false, message: 'not found' });
     }
 
+  }).catch(function (error) {
+    if(error) {
+      res.status(422).send({ error: 'Some Error in database entry, Please contact the provider'});
+    }
   });
 };
 

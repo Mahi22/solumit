@@ -13,11 +13,14 @@ const userSchema = db.define('user', {
     type: Sequelize.STRING,
     allowNull: false
   },
+  imei: {
+    type: Sequelize.STRING(15),
+    allowNull: false
+  },
   logins: {
     type: Sequelize.INTEGER,
     defaultValue: 0
   }
-
 }, {
   instanceMethods: {
     comparePassword : function(candidatePassword, callback) {
