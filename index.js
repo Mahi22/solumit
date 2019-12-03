@@ -156,7 +156,8 @@ app.get('/excel', function (req, res) {
     var fileName = 'SindhData.xlsx';
 
     sheet.columns = [
-        { header: 'Date And Time', key: 'fortime', dateFormat: 'YYYY-MM-DD[T]HH:mm:ss', dateUTC: true },
+        { header: 'Date', key: 'fordate' },
+        { header: 'Time', key: 'fortime' },
         { header: 'UPS OpV', key: 'ups_opv' },
         { header: 'UPS Vb', key: 'ups_vb' },
         { header: 'UPS l1', key: 'ups_l1' },
@@ -186,10 +187,12 @@ app.get('/excel', function (req, res) {
 
     querybuilder.then(values => {
         values.forEach(val => {
-            val.fortime = moment(val.fortime).utcOffset('+05:30').toString();
+            const datetime = moment(val.fortime).utcOffset('+05:30');
             Object.keys(val).filter(key => key !== 'fortime').forEach(key => {
                 val[key] = Math.round(val[key]);
             });
+            val.fordate = datetime.format('DD/MM/YYYY');
+            val.fortime = datetime.format('HH:mm');
             sheet.addRow(val);
         });
         // console.log('ADDED values');
