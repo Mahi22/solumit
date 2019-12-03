@@ -6,3 +6,5 @@ new app/
 .DS_Store
 data/
 update/
+.env
+node_modules/

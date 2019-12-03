@@ -1,0 +1,17 @@
+{
+  "name": "solumit",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/Mahi22/solumit",
+  "license": "MIT",
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "knex": "^0.20.3",
+    "particle-api-js": "^8.0.1",
+    "pg": "^7.14.0",
+    "rxjs": "^6.5.3"
+  }
+}
