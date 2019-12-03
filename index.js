@@ -185,8 +185,11 @@ app.get('/excel', function (req, res) {
     }
 
     querybuilder.then(values => {
-        values.forEach(val => sheet.addRow(val));
-        console.log('ADDED values');
+        values.forEach(val => {
+            val.fortime = moment(val.fortime).utcOffset('+05:30').toISOString();
+            sheet.addRow(val);
+        });
+        // console.log('ADDED values');
         // res.type('application/json');
         // res.send(values);
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
