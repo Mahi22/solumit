@@ -186,7 +186,10 @@ app.get('/excel', function (req, res) {
 
     querybuilder.then(values => {
         values.forEach(val => {
-            val.fortime = moment(val.fortime).utcOffset('+05:30').toISOString();
+            val.fortime = moment(val.fortime).utcOffset('+05:30').toString();
+            Object.keys(val).filter(key => key !== 'fortime').forEach(key => {
+                val[key] = Math.round(val[key]);
+            });
             sheet.addRow(val);
         });
         // console.log('ADDED values');
