@@ -3,6 +3,12 @@ var Particle = require('particle-api-js');
 var rxjs = require('rxjs');
 var operators = require('rxjs/operators');
 var knex = require('knex');
+var express = require('express');
+var bodyParser = require('body-parser');
+const Excel = require('exceljs');
+var moment = require('moment');
+
+var  app = express();
 
 var particle = new Particle();
 
@@ -138,3 +144,58 @@ particle.getEventStream({ deviceId, auth }).then(function(stream) {
 }, function (err) {
     console.log(err);
 });
+
+app.use(bodyParser.json());
+
+app.get('/excel', function (req, res) {
+    // console.log(req.query);
+    var workbook = new Excel.Workbook();
+
+    var sheet = workbook.addWorksheet('Data');
+
+    var fileName = 'SindhData.xlsx';
+
+    sheet.columns = [
+        { header: 'Date And Time', key: 'fortime', dateFormat: 'YYYY-MM-DD[T]HH:mm:ss', dateUTC: true },
+        { header: 'UPS OpV', key: 'ups_opv' },
+        { header: 'UPS Vb', key: 'ups_vb' },
+        { header: 'UPS l1', key: 'ups_l1' },
+        { header: 'UPS l2', key: 'ups_l2' },
+        { header: 'UPS lt', key: 'ups_lt' },
+        { header: 'PFC Vi', key: 'pfc_vi' },
+        { header: 'PFC Ii', key: 'pfc_ii' },
+        { header: 'PFC Vm', key: 'pfc_vm' },
+        { header: 'PFC Vb', key: 'pfc_vb' },
+        { header: 'PFC Io', key: 'pfc_io' },
+        { header: 'MPPT Vi', key: 'mp1_vi' },
+        { header: 'MPPT Ii', key: 'mp1_ii' },
+        { header: 'MPPT Vm', key: 'mp1_vm' },
+        { header: 'MPPT Vb', key: 'mp1_vb' },
+        { header: 'MPPT Io', key: 'mp1_io' },
+    ]
+
+    const querybuilder = db('device3').select('*');
+
+    if (req.query.startDate) {
+        querybuilder.where('fortime', '>=', moment(req.query.startDate).startOf('day').toISOString());
+    }
+
+    if (req.query.endDate) {
+        querybuilder.where('fortime', '<', moment(req.query.endDate).endOf('day').toISOString());
+    }
+
+    querybuilder.then(values => {
+        values.forEach(val => sheet.addRow(val));
+        console.log('ADDED values');
+        // res.type('application/json');
+        // res.send(values);
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+        workbook.xlsx.write(res, { dateFormat: 'YYYY-MM-DD[T]HH:mm:ss', dateUTC: true }).then(function(){
+            res.end();
+        });
+    });
+    
+});
+
+app.listen(8080);
