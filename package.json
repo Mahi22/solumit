@@ -5,7 +5,7 @@
   "repository": "https://github.com/Mahi22/solumit",
   "license": "MIT",
   "scripts": {
-    "dev": "node index.js"
+    "start": "node index.js"
   },
   "dependencies": {
     "dotenv": "^8.2.0",
