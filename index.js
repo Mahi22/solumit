@@ -8,6 +8,8 @@ var bodyParser = require('body-parser');
 const Excel = require('exceljs');
 var moment = require('moment');
 
+const deviceData = require('./data');
+
 var  app = express();
 
 // var particle = new Particle();
@@ -148,6 +150,28 @@ var  app = express();
 // }, function (err) {
 //     console.log(err);
 // });
+
+const devices = [
+    {
+        name: 'SolAce_3',
+        deviceId: '1f0053000451353432383931',
+        dbName: 'device3'
+    },
+    {
+        name: 'SolAce_1',
+        deviceId: '3c0047000651353530333533',
+        dbName: 'device1'
+    },
+    {
+        name: 'SolAce_4',
+        deviceId: '31002b000651353530333533',
+        dbName: 'device4'
+    }
+];
+
+const auth = '1efe3ec01ee1c716498e13b4a988dfc51d6f63c9';
+
+deviceData('3c0047000651353530333533', auth, 'device1');
 
 app.use(bodyParser.json());
 

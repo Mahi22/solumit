@@ -26,9 +26,13 @@ function fetchDeviceData(deviceId, auth, dbDevice) {
 
     const ups = source.pipe(
         operators.filter(val => val.name.includes('UPS')),
+        operators.tap(console.log),
         operators.buffer(inv),
         operators.map(values => values.map(d => d.data).filter(d => d.includes('OpV'))),
-        operators.map(a => a.map(v => {
+        operators.map(a => {
+          console.log(a);
+
+          return a.map(v => {
             if (v) {
                 var line1 = v.substring(0, 16).split(' ');
                 var line2 = v.substring(16, 32).split(' ');
@@ -39,7 +43,8 @@ function fetchDeviceData(deviceId, auth, dbDevice) {
             } else {
                 return { OpV: 0, l1: 0, l2: 0, lt: 0,  Vb: 0 };
             }
-         })),
+         })
+        }),
         operators.map(val => {
             const result = val.reduce((acc, curr) => {
                 acc.OpV += curr.OpV;
@@ -109,6 +114,7 @@ function fetchDeviceData(deviceId, auth, dbDevice) {
     
     const values = rxjs.zip(ups, pfc, mp1);
     values.subscribe(val => {
+        // console.log(val);
         db(dbDevice).insert({
             fortime: new Date().toISOString(),
             ups_opv: val[0].OpV,
