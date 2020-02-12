@@ -178,7 +178,7 @@ deviceData('1f0053000451353432383931', auth, 'device3');
 app.use(bodyParser.json());
 
 app.get('/excel', function (req, res) {
-    // console.log(req.query);
+    console.log(req.query);
     var workbook = new Excel.Workbook();
 
     var sheet = workbook.addWorksheet('Data');
@@ -205,7 +205,7 @@ app.get('/excel', function (req, res) {
         { header: 'MPPT Io', key: 'mp1_io' },
     ]
 
-    const querybuilder = db(`device${res.query.deviceId || 3}`).select('*');
+    const querybuilder = db(`device${req.query.deviceId || 3}`).select('*');
 
     if (req.query.startDate) {
         querybuilder.where('fortime', '>=', moment(req.query.startDate).startOf('day').toISOString());
