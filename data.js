@@ -17,31 +17,81 @@ const db = knex({
   }
 });
 
+function device1Transform(v) {
+    // console.log('DEVICE DATA', v);
+    if (v) {
+        // var line1 = v.substring(0, 16).split(' ');
+        // var line2 = v.substring(16, 32).split(' ');
+        // var l1 = parseInt(line1[2].replace(/[^\d.-]/g, ''));
+        // var l2 = parseInt(line1[3].replace(/[^\d.-]/g, ''));
+        // var lt = parseInt(line1[1].replace(/[^\d.-]/g, ''));
+        // return { OpV: parseInt(line1[0].replace(/[^\d.-]/g, '')), Vb: parseInt(line2[0].replace(/[^\d.-]/g, '')), l1, l2, lt }
+        var arr = v.split(' ');
+        return {
+            OpV: parseInt(arr[1].replace(/[^\d.-]/g, ''), 10),
+            Vb: parseInt(arr[3].replace(/[^\d.-]/g, ''), 10),
+            l1: 0,
+            l2: 0,
+            lt: parseInt(arr[2].replace(/[^\d.-]/g, ''), 10) * 2
+        }
+    } else {
+        return { OpV: 0, l1: 0, l2: 0, lt: 0,  Vb: 0 };
+    }
+}
+
+function device3Transform(v) {
+    if (v) {
+        var line1 = v.substring(0, 16).split(' ');
+        var line2 = v.substring(16, 32).split(' ');
+        var l1 = parseInt(line1[2].replace(/[^\d.-]/g, ''));
+        var l2 = parseInt(line1[3].replace(/[^\d.-]/g, ''));
+        var lt = parseInt(line1[1].replace(/[^\d.-]/g, ''));
+        return { OpV: parseInt(line1[0].replace(/[^\d.-]/g, '')), Vb: parseInt(line2[0].replace(/[^\d.-]/g, '')), l1, l2, lt }
+    } else {
+        return { OpV: 0, l1: 0, l2: 0, lt: 0,  Vb: 0 };
+    }
+}
+
 function fetchDeviceData(deviceId, auth, dbDevice) {
   var particle = new Particle();
 
+//   console.log('DbDevice', dbDevice);
+
   particle.getEventStream({ deviceId, auth }).then(function(stream) {
-    const source = rxjs.fromEvent(stream, 'event').pipe(operators.catchError(console.log));
+    const source = rxjs.fromEvent(stream, 'event').pipe(
+        // operators.tap(console.log),
+        operators.catchError(console.log));
     const inv = rxjs.interval(30000);
 
     const ups = source.pipe(
         operators.filter(val => val.name.includes('UPS')),
-        operators.tap(console.log),
+        // operators.tap(console.log),
         operators.buffer(inv),
-        operators.map(values => values.map(d => d.data).filter(d => d.includes('OpV'))),
+        operators.map(values => values.map(d => d.data).filter(d => {
+            // dbDevice === 'device1' ? d.includes('O/p') : d.includes('OpV'))
+            if (dbDevice === 'device1') {
+                return d.includes('O/p');
+            } else if (dbDevice === 'device3') {
+                return d.includes('OpV');
+            }
+        })),
         operators.map(a => {
-          console.log(a);
-
+        //   console.log('Device VALUES', a);
           return a.map(v => {
-            if (v) {
-                var line1 = v.substring(0, 16).split(' ');
-                var line2 = v.substring(16, 32).split(' ');
-                var l1 = parseInt(line1[2].replace(/[^\d.-]/g, ''));
-                var l2 = parseInt(line1[3].replace(/[^\d.-]/g, ''));
-                var lt = parseInt(line1[1].replace(/[^\d.-]/g, ''));
-                return { OpV: parseInt(line1[0].replace(/[^\d.-]/g, '')), Vb: parseInt(line2[0].replace(/[^\d.-]/g, '')), l1, l2, lt }
-            } else {
-                return { OpV: 0, l1: 0, l2: 0, lt: 0,  Vb: 0 };
+            // if (v) {
+            //     var line1 = v.substring(0, 16).split(' ');
+            //     var line2 = v.substring(16, 32).split(' ');
+            //     var l1 = parseInt(line1[2].replace(/[^\d.-]/g, ''));
+            //     var l2 = parseInt(line1[3].replace(/[^\d.-]/g, ''));
+            //     var lt = parseInt(line1[1].replace(/[^\d.-]/g, ''));
+            //     return { OpV: parseInt(line1[0].replace(/[^\d.-]/g, '')), Vb: parseInt(line2[0].replace(/[^\d.-]/g, '')), l1, l2, lt }
+            // } else {
+            //     return { OpV: 0, l1: 0, l2: 0, lt: 0,  Vb: 0 };
+            // }
+            if (dbDevice === 'device1') {
+                return device1Transform(v);
+            } else if (dbDevice === 'device3') {
+                return device3Transform(v);
             }
          })
         }),
@@ -114,7 +164,7 @@ function fetchDeviceData(deviceId, auth, dbDevice) {
     
     const values = rxjs.zip(ups, pfc, mp1);
     values.subscribe(val => {
-        // console.log(val);
+        console.log(val);
         db(dbDevice).insert({
             fortime: new Date().toISOString(),
             ups_opv: val[0].OpV,
@@ -133,7 +183,7 @@ function fetchDeviceData(deviceId, auth, dbDevice) {
             mp1_io: val[2].Io,
             mp1_vm: 299,
         }).then(val => {
-            console.log('INSRTED VALUE ', new Date().toISOString());
+            console.log(`INSRTED VALUE ${dbDevice}`, new Date().toISOString());
         }).catch(console.log);
     });
   }, function (err) {

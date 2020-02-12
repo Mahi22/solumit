@@ -151,27 +151,29 @@ var  app = express();
 //     console.log(err);
 // });
 
-const devices = [
-    {
-        name: 'SolAce_3',
-        deviceId: '1f0053000451353432383931',
-        dbName: 'device3'
-    },
-    {
-        name: 'SolAce_1',
-        deviceId: '3c0047000651353530333533',
-        dbName: 'device1'
-    },
-    {
-        name: 'SolAce_4',
-        deviceId: '31002b000651353530333533',
-        dbName: 'device4'
-    }
-];
+// const devices = [
+//     {
+//         name: 'SolAce_3',
+//         deviceId: '1f0053000451353432383931',
+//         dbName: 'device3'
+//     },
+//     {
+//         name: 'SolAce_1',
+//         deviceId: '3c0047000651353530333533',
+//         dbName: 'device1'
+//     },
+//     {
+//         name: 'SolAce_4',
+//         deviceId: '31002b000651353530333533',
+//         dbName: 'device4'
+//     }
+// ];
 
 const auth = '1efe3ec01ee1c716498e13b4a988dfc51d6f63c9';
 
 deviceData('3c0047000651353530333533', auth, 'device1');
+
+deviceData('1f0053000451353432383931', auth, 'device3');
 
 app.use(bodyParser.json());
 
@@ -181,7 +183,7 @@ app.get('/excel', function (req, res) {
 
     var sheet = workbook.addWorksheet('Data');
 
-    var fileName = 'SindhData.xlsx';
+    var fileName = 'solumExcel.xlsx';
 
     sheet.columns = [
         { header: 'Date', key: 'fordate' },
@@ -203,7 +205,7 @@ app.get('/excel', function (req, res) {
         { header: 'MPPT Io', key: 'mp1_io' },
     ]
 
-    const querybuilder = db('device3').select('*');
+    const querybuilder = db(`device${res.query.deviceId || 3}`).select('*');
 
     if (req.query.startDate) {
         querybuilder.where('fortime', '>=', moment(req.query.startDate).startOf('day').toISOString());
