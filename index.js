@@ -2,7 +2,7 @@ require('dotenv').config();
 // var Particle = require('particle-api-js');
 // var rxjs = require('rxjs');
 // var operators = require('rxjs/operators');
-// var knex = require('knex');
+var knex = require('knex');
 var express = require('express');
 var bodyParser = require('body-parser');
 const Excel = require('exceljs');
@@ -22,19 +22,19 @@ var  app = express();
 // Ahmednagar
 // 31002d000651353530333533/events?access_token=58ffabab59b1beca81fe492b07977cd57288016c
 
-// const db = knex({
-//     client: process.env.DB_CLIENT || 'pg',
-//     connection: {
-//       host: process.env.DB_HOST,
-//       user: process.env.DB_USER,
-//       socketPath: process.env.DB_SOCKET_PATH,
-//       password: process.env.DB_PASSWORD,
-//       database: process.env.DB_DATABASE,
-//       ssl: process.env.DB_SSL,
-//       multipleStatements: true,
-//       charset: 'utf8'
-//     }
-//   });
+const db = knex({
+    client: process.env.DB_CLIENT || 'pg',
+    connection: {
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      socketPath: process.env.DB_SOCKET_PATH,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_DATABASE,
+      ssl: process.env.DB_SSL,
+      multipleStatements: true,
+      charset: 'utf8'
+    }
+  });
 
 // particle.getEventStream({ deviceId, auth }).then(function(stream) {
 //     const source = rxjs.fromEvent(stream, 'event').pipe(operators.catchError(console.log));
