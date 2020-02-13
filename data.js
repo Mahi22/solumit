@@ -71,7 +71,7 @@ function fetchDeviceData(deviceId, auth, dbDevice) {
             // dbDevice === 'device1' ? d.includes('O/p') : d.includes('OpV'))
             if (dbDevice === 'device1') {
                 return d.includes('O/p');
-            } else if (dbDevice === 'device3') {
+            } else if (dbDevice === 'device3' || dbDevice === 'device2') {
                 return d.includes('OpV');
             }
         })),
@@ -90,7 +90,7 @@ function fetchDeviceData(deviceId, auth, dbDevice) {
             // }
             if (dbDevice === 'device1') {
                 return device1Transform(v);
-            } else if (dbDevice === 'device3') {
+            } else if (dbDevice === 'device3' || dbDevice === 'device2') {
                 return device3Transform(v);
             }
          })
