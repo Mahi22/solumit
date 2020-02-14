@@ -1,6 +1,6 @@
 // Import.
 const fs = require('fs');
-
+const moment = require('moment');
 /**
  * Append zero to length.
  * @param {string} value Value to append zero.
@@ -16,14 +16,9 @@ function appendZeroToLength(value, length) {
  * @returns {string} Date as text. Sample: "2018.12.03, 07:32:13.0162 UTC".
  */
 function getDateAsText() {
-  const now = new Date();
-  const nowText = appendZeroToLength(now.getFullYear(), 4) + '.'
-    + appendZeroToLength(now.getMonth() + 1, 2) + '.'
-    + appendZeroToLength(now.getDate(), 2) + ', '
-    + appendZeroToLength(now.getHours(), 2) + ':'
-    + appendZeroToLength(now.getMinutes(), 2) + ':'
-    + appendZeroToLength(now.getSeconds(), 2) + '.'
-    + appendZeroToLength(now.getMilliseconds(), 4);
+  const now = moment().utcOffset('+05:30');
+  // 2020.02.14, 21:07:25.0629
+  const nowText = now.format('YYYY.MM.DD, HH:mm:ss')
   return nowText;
 }
 
