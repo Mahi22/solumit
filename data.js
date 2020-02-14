@@ -62,7 +62,6 @@ function fetchDeviceData(deviceId, auth, dbDevice) {
   particle.getEventStream({ deviceId, auth }).then(function(stream) {
     const source = rxjs.fromEvent(stream, 'event').pipe(
         operators.tap(val => {
-            console.log('VALUE', val);
             logFile(JSON.stringify(val), `${deviceId}.log`);
         }),
         operators.catchError(err => {
@@ -85,7 +84,7 @@ function fetchDeviceData(deviceId, auth, dbDevice) {
         operators.map(a => {
         //   console.log('Device VALUES', a);
           if (a.length === 0) {
-            return { OpV: 0, l1: 0, l2: 0, lt: 0,  Vb: 0 };
+            return [{ OpV: 0, l1: 0, l2: 0, lt: 0,  Vb: 0 }];
           }
           return a.map(v => {
             // if (v) {

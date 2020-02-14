@@ -23,7 +23,7 @@ function getDateAsText() {
     + appendZeroToLength(now.getHours(), 2) + ':'
     + appendZeroToLength(now.getMinutes(), 2) + ':'
     + appendZeroToLength(now.getSeconds(), 2) + '.'
-    + appendZeroToLength(now.getMilliseconds(), 4) + ' IST';
+    + appendZeroToLength(now.getMilliseconds(), 4);
   return nowText;
 }
 
