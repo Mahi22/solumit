@@ -2,6 +2,7 @@ var Particle = require('particle-api-js');
 var rxjs = require('rxjs');
 var operators = require('rxjs/operators');
 var knex = require('knex');
+var logFile = require('./logfile');
 
 const db = knex({
   client: process.env.DB_CLIENT || 'pg',
@@ -26,6 +27,7 @@ function device1Transform(v) {
         // var l2 = parseInt(line1[3].replace(/[^\d.-]/g, ''));
         // var lt = parseInt(line1[1].replace(/[^\d.-]/g, ''));
         // return { OpV: parseInt(line1[0].replace(/[^\d.-]/g, '')), Vb: parseInt(line2[0].replace(/[^\d.-]/g, '')), l1, l2, lt }
+        // console.log('VALUEE ', v);
         var arr = v.split(' ');
         return {
             OpV: parseInt(arr[1].replace(/[^\d.-]/g, ''), 10),
@@ -59,8 +61,13 @@ function fetchDeviceData(deviceId, auth, dbDevice) {
 
   particle.getEventStream({ deviceId, auth }).then(function(stream) {
     const source = rxjs.fromEvent(stream, 'event').pipe(
-        // operators.tap(console.log),
-        operators.catchError(console.log));
+        operators.tap(val => {
+            console.log('VALUE', val);
+            logFile(JSON.stringify(val), `${deviceId}.log`);
+        }),
+        operators.catchError(err => {
+            logFile(`Error - \t ${JSON.stringify(val)}`, `${deviceId}.log`);
+        }));
     const inv = rxjs.interval(30000);
 
     const ups = source.pipe(
@@ -77,6 +84,9 @@ function fetchDeviceData(deviceId, auth, dbDevice) {
         })),
         operators.map(a => {
         //   console.log('Device VALUES', a);
+          if (a.length === 0) {
+            return { OpV: 0, l1: 0, l2: 0, lt: 0,  Vb: 0 };
+          }
           return a.map(v => {
             // if (v) {
             //     var line1 = v.substring(0, 16).split(' ');

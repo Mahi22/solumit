@@ -219,7 +219,7 @@ app.get('/excel', function (req, res) {
 
     querybuilder.then(values => {
         values.forEach(val => {
-            const datetime = moment(val.fortime).utcOffset('+05:30');
+            const datetime = moment(val.fortime); // .utcOffset('+05:30')
             Object.keys(val).filter(key => key !== 'fortime').forEach(key => {
                 val[key] = Math.round(val[key]);
             });
