@@ -2,6 +2,7 @@ var Particle = require('particle-api-js');
 var rxjs = require('rxjs');
 var operators = require('rxjs/operators');
 var knex = require('knex');
+var moment = require('moment');
 var logFile = require('./logfile');
 
 const db = knex({
@@ -67,6 +68,13 @@ function fetchDeviceData(deviceId, auth, dbDevice) {
         operators.catchError(err => {
             logFile(`Error - \t ${JSON.stringify(err)}`, `${deviceId}.log`);
         }));
+
+    // emit on diff
+    // source.pipe(
+    //     operators.tap(val => {
+
+    //     })
+    // ).subscribe();
     const inv = rxjs.interval(30000);
 
     const ups = source.pipe(
