@@ -62,7 +62,7 @@ function fetchDeviceData(deviceId, auth, dbDevice) {
   particle.getEventStream({ deviceId, auth }).then(function(stream) {
     const source = rxjs.fromEvent(stream, 'event').pipe(
         operators.tap(val => {
-            logFile(JSON.stringify(val), `${dbDevice}.log`);
+            logFile(JSON.stringify(val), `${dbDevice}_${moment().format('DD_MM_YYYY')}.log`);
         }),
         operators.catchError(err => {
             logFile(`Error - \t ${JSON.stringify(err)}`, `${deviceId}.log`);
