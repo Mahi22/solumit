@@ -211,17 +211,20 @@ app.get('/excel', function (req, res) {
 
     const querybuilder = db(`device${req.query.deviceId || 3}`).select('*');
 
+    console.log(moment(req.query.startDate).startOf('day').subtract('5.5', 'hours').toString());
+    console.log(moment(req.query.endDate).endOf('day').subtract('5.5', 'hours').toString());
+
     if (req.query.startDate) {
-        querybuilder.where('fortime', '>=', moment(req.query.startDate).startOf('day').toISOString());
+        querybuilder.where('fortime', '>=', moment(req.query.startDate).startOf('day').subtract('5.5', 'hours').toString());
     }
 
     if (req.query.endDate) {
-        querybuilder.where('fortime', '<', moment(req.query.endDate).endOf('day').toISOString());
+        querybuilder.where('fortime', '<', moment(req.query.endDate).endOf('day').subtract('5.5', 'hours').toString());
     }
 
     querybuilder.then(values => {
         values.forEach(val => {
-            const datetime = moment(val.fortime); // .utcOffset('+05:30')
+            const datetime = moment(val.fortime).utcOffset('+05:30');
             Object.keys(val).filter(key => key !== 'fortime').forEach(key => {
                 val[key] = Math.round(val[key]);
             });
