@@ -83,12 +83,12 @@ function fetchDeviceData(deviceId, auth, dbDevice) {
         operators.share()
     );
 
-    const upsInputChange = upsSource.pipe(
+    const upsChange = upsSource.pipe(
         operators.filter(val => val.data.includes('UPS')),
         operators.distinctUntilChanged((prev, curr) => prev.data ===  curr.data)
     );
 
-    upsInputChange.subscribe(val => {
+    upsChange.subscribe(val => {
         logFile(JSON.stringify(val), `${dbDevice}_change_${moment().format('DD_MM_YYYY')}.log`);
     });
 
@@ -153,23 +153,23 @@ function fetchDeviceData(deviceId, auth, dbDevice) {
         operators.share()
     );
 
-    const pfcInputChange = pfcSource.pipe(
-        operators.filter(val => val.data.includes('Vi')),
+    const pfcChange = pfcSource.pipe(
+        // operators.filter(val => val.data.includes('Vi')),
         operators.distinctUntilChanged((prev, curr) => prev.data.substring(0, 15) ===  curr.data.substring(0, 15))
     );
 
-    pfcInputChange.subscribe(val => {
+    pfcChange.subscribe(val => {
         logFile(JSON.stringify(val), `${dbDevice}_change_${moment().format('DD_MM_YYYY')}.log`);
     });
 
-    const pfcOutputChange = pfcSource.pipe(
-        operators.filter(val => val.data.includes('Vb')),
-        operators.distinctUntilChanged((prev, curr) => prev.data.substring(0, 15) ===  curr.data.substring(0, 15))
-    );
+    // const pfcOutputChange = pfcSource.pipe(
+    //     operators.filter(val => val.data.includes('Vb')),
+    //     operators.distinctUntilChanged((prev, curr) => prev.data.substring(0, 15) ===  curr.data.substring(0, 15))
+    // );
 
-    pfcOutputChange.subscribe(val => {
-        logFile(JSON.stringify(val), `${dbDevice}_change_${moment().format('DD_MM_YYYY')}.log`);
-    });
+    // pfcOutputChange.subscribe(val => {
+    //     logFile(JSON.stringify(val), `${dbDevice}_change_${moment().format('DD_MM_YYYY')}.log`);
+    // });
 
     const pfc = pfcSource.pipe(
         // operators.tap(val => console.log('PFC', val)),
@@ -196,26 +196,26 @@ function fetchDeviceData(deviceId, auth, dbDevice) {
         operators.share()
     );
 
-    const mp1InputChange = mp1Source.pipe(
-        operators.filter(val => val.data.includes('Vi') && !val.data.includes('ILVb')),
+    const mp1Change = mp1Source.pipe(
+        // operators.filter(val => val.data.includes('Vi') && !val.data.includes('ILVb')),
         operators.distinctUntilChanged((prev, curr) => prev.data.substring(0, 15) ===  curr.data.substring(0, 15))
     );
 
-    mp1InputChange.subscribe(val => {
+    mp1Change.subscribe(val => {
         logFile(JSON.stringify(val), `${dbDevice}_change_${moment().format('DD_MM_YYYY')}.log`);
     });
 
-    const mp1OutputChange = mp1Source.pipe(
-        operators.filter(val => val.data.includes('Vb') && !val.data.includes('ILVb')),
-        operators.distinctUntilChanged((prev, curr) => prev.data.substring(0, 15) ===  curr.data.substring(0, 15))
-    );
+    // const mp1OutputChange = mp1Source.pipe(
+    //     operators.filter(val => val.data.includes('Vb') && !val.data.includes('ILVb')),
+    //     operators.distinctUntilChanged((prev, curr) => prev.data.substring(0, 15) ===  curr.data.substring(0, 15))
+    // );
 
-    mp1OutputChange.subscribe(val => {
-        logFile(JSON.stringify(val), `${dbDevice}_change_${moment().format('DD_MM_YYYY')}.log`);
-    });
+    // mp1OutputChange.subscribe(val => {
+    //     logFile(JSON.stringify(val), `${dbDevice}_change_${moment().format('DD_MM_YYYY')}.log`);
+    // });
 
     const mp1 = mp1Source.pipe(
-        operators.tap(val => console.log('MP1', val)),
+        // operators.tap(val => console.log('MP1', val)),
         operators.filter(val => val.data.includes('Vi') || (val.data.includes('Vb') && !val.data.includes('ILVb'))),
         operators.buffer(inv),
         operators.map(vals => {
