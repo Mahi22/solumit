@@ -1,0 +1,31 @@
+{
+  "name": "solace-server",
+  "version": "1.0.0",
+  "description": "Server code for Real-time dashboard using GraphQL and Redis",
+  "main": "index.js",
+  "author": "mahi22",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint .*/**.js",
+    "start": "nodemon index.js"
+  },
+  "dependencies": {
+    "@replit/clui-gql": "^0.0.7",
+    "apollo-server": "^2.4.2",
+    "graphql": "^14.1.1",
+    "graphql-redis-subscriptions": "^2.0.0",
+    "graphql-subscriptions": "^1.0.0",
+    "ioredis": "^4.6.2",
+    "json2md": "^1.7.0",
+    "markdown-it": "^10.0.0",
+    "moment": "^2.24.0",
+    "particle-api-js": "^8.3.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.14.0",
+    "eslint-config-prettier": "^4.0.0",
+    "eslint-plugin-prettier": "^3.0.1",
+    "nodemon": "^1.18.10",
+    "prettier": "1.16.4"
+  }
+}
