@@ -30,6 +30,24 @@ const contacts = [
   }
 ];
 
+const deviceList = [
+  {
+    id: 1,
+    name: "SolAce_1",
+    location: "Vidya_Valley"
+  },
+  {
+    id: 2,
+    name: "SolAce_2",
+    location: "Ahmednagar"
+  },
+  {
+    id: 3,
+    name: "SolAce_3",
+    location: "Sindh"
+  }
+];
+
 /**
  * (1) Get random data for `component` by calling `generator` function
  * (2) Publish the data to channel for `component`
@@ -56,6 +74,17 @@ module.exports = {
               c.email.toLowerCase().includes(args.query.toLowerCase())
           )
         : contacts.slice(0, 10);
+
+      return filtered;
+    },
+    searchDevice: (ctx, args) => {
+      const filtered = args.query
+        ? deviceList.filter(
+            c =>
+              c.name.toLowerCase().includes(args.query.toLowerCase()) ||
+              c.location.toLowerCase().includes(args.query.toLowerCase())
+          )
+        : deviceList.slice(0, 10);
 
       return filtered;
     },
@@ -165,7 +194,7 @@ fragment CluiOutput on CluiOutput {
       var particle = new Particle();
 
       var token = "1efe3ec01ee1c716498e13b4a988dfc51d6f63c9";
-      var devicesPr = particle.listDevices({ auth: token });
+      var ListPr = particle.listDevices({ auth: token });
 
       return devicesPr.then(
         function(devices) {
@@ -227,13 +256,28 @@ fragment CluiOutput on CluiOutput {
           return { error: "Error in Particle API" };
         }
       );
+    },
+    changeLog: (ctx, args) => {
+      console.log(args);
+      return { message: "Show change table" };
     }
   },
   Mutation: {
     cpu: () => publishRandomData(cpuData, COMPONENTS.CPU),
     traffic: () => publishRandomData(trafficData, COMPONENTS.TRAFFIC),
     distribution: () => publishRandomData(regionData, COMPONENTS.DISTRIBUTION),
-    messages: () => publishRandomData(messageData, COMPONENTS.MESSAGES)
+    messages: () => publishRandomData(messageData, COMPONENTS.MESSAGES),
+    logRequest: async (ctx, args) => {
+      console.log(args);
+      switch (args.type) {
+        case "excel":
+          return {
+            success: "Link"
+          };
+        default:
+          return { error: "Params missing" };
+      }
+    }
   },
   Subscription: {
     cpu: {

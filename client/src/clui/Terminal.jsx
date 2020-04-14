@@ -10,6 +10,7 @@ import QueryPrompt from './QueryPrompt';
 import MutationPrompt from './MutationPrompt';
 import clear from './commands/clear';
 import email from './commands/email';
+import log from './commands/log';
 
 import Prompt from './Prompt';
 
@@ -54,6 +55,21 @@ const Terminal = () => {
       fetchPolicy: 'network-only'
     });
 
+  const searchDevice = async query =>
+    client.query({
+      query: gql`
+        query Q($query: String) {
+          searchDevice(query: $query) {
+            id
+            name
+            location
+          }
+        }
+      `,
+      variables: { query },
+      fetchPolicy: 'network-only'
+    });
+
   const { error, data } = useQuery(
     gql`
       query {
@@ -79,6 +95,7 @@ const Terminal = () => {
     command.commands = {
       ...command.commands,
       email: email(search),
+      log: log(searchDevice),
       clear
     };
   }

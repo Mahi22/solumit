@@ -27,6 +27,12 @@ const schema = gql`
     email: String!
   }
 
+  type DeviceInfo {
+    id: String!
+    name: String!
+    location: String!
+  }
+
   union CluiOutput = CluiSuccessOutput | CluiMarkdownOutput | CluiErrorOutput
 
   "Manage contacts"
@@ -49,6 +55,8 @@ const schema = gql`
   type Device {
     "List Devices"
     list: CluiOutput
+    "View Change Logs"
+    changeLog(deviceId: String!, date: String!): CluiOutput
   }
 
   type Dps {
@@ -78,6 +86,7 @@ const schema = gql`
 
   type Query {
     search(query: String): [Contact!]!
+    searchDevice(query: String): [DeviceInfo!]
     clui: Clui!
     command: String!
     cpu: CPU
@@ -86,11 +95,17 @@ const schema = gql`
     messages: [Message]
   }
 
+  type ResultPayload {
+    success: String
+    error: String
+  }
+
   type Mutation {
     cpu: CPU
     traffic: Traffic
     distribution: [Distribution]
     messages: [Message]
+    logRequest(deviceId: String!, date: String!, type: String!): ResultPayload
   }
 
   type Subscription {

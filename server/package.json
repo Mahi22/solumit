@@ -12,11 +12,14 @@
   "dependencies": {
     "@replit/clui-gql": "^0.0.7",
     "apollo-server": "^2.4.2",
+    "dotenv": "^8.2.0",
+    "exceljs": "^3.8.2",
     "graphql": "^14.1.1",
     "graphql-redis-subscriptions": "^2.0.0",
     "graphql-subscriptions": "^1.0.0",
     "ioredis": "^4.6.2",
     "json2md": "^1.7.0",
+    "knex": "^0.20.14",
     "markdown-it": "^10.0.0",
     "moment": "^2.24.0",
     "particle-api-js": "^8.3.0"
