@@ -25,11 +25,10 @@ function deviceData(deviceId, forDate) {
       utcOffsetDate.endOf("day").toISOString()
     ])
     .orderBy("fortime", "asc");
-  console.log("Working");
   const client = new pg.Client(queryBuilder.client.connectionSettings);
   client.connect();
   const { sql, bindings } = queryBuilder.toSQL().toNative();
-  console.log(sql, bindings);
+  console.log(new Date().toISOString(), sql, bindings);
   const stream = new QueryStream(sql, bindings, {
     highWaterMark: 100,
     batchSize: 50
