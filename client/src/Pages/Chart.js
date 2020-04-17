@@ -3,7 +3,7 @@ import DatePicker from 'react-datepicker';
 import { useParams } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
-import { apply, curry } from 'ramda';
+import { apply, curry, isNil } from 'ramda';
 import 'react-datepicker/dist/react-datepicker.css';
 
 import { TimeSeries } from 'pondjs';
@@ -89,6 +89,23 @@ const darkAxis = {
   }
 };
 
+// class CrossHairs extends React.Component {
+//   render() {
+//       const { x, y } = this.props;
+//       const style = { pointerEvents: "none", stroke: "#ccc" };
+//       if (!isNil(x) && !isNil(y)) {
+//           return (
+//               <g>
+//                   <line style={style} x1={0} y1={y} x2={this.props.width} y2={y} />
+//                   <line style={style} x1={x} y1={0} x2={x} y2={this.props.height} />
+//               </g>
+//           );
+//       } else {
+//           return <g />;
+//       }
+//   }
+// }
+
 
 class Chart extends React.Component
  {
@@ -101,9 +118,13 @@ class Chart extends React.Component
          mains: true,
          solar: true
        },
-       timerange: props.outputSeries.range()
+       timerange: props.outputSeries.range(),
+       x: null,
+       y: null,
+       tracker: null
      }
      this.handleRescale = debounce_(false, 300, this.rescale.bind(this));
+     this.handleTrackerChanged = debounce_(false, 200, this.trackerChanged.bind(this));
    }
 
    handleActiveChange = key => {
@@ -117,6 +138,19 @@ class Chart extends React.Component
    handleTimeRangeChange = timerange => {
       this.setState({ timerange });
       this.handleRescale(timerange);
+   };
+
+   trackerChanged = tracker => {
+     console.log(tracker);
+        if (!tracker) {
+            this.setState({ tracker, x: null, y: null });
+        } else {
+            this.setState({ tracker });
+        }
+    };
+
+   handleMouseMove = (x, y) => {
+      this.setState({ x, y });
    };
 
    rescale(timerange, active = this.state.active) {
@@ -176,58 +210,77 @@ class Chart extends React.Component
           />
         );
      }
+
+     let time = null;
+     let index = null;
+     if (this.state.tracker) {
+        time = new Date(this.state.tracker).toLocaleTimeString();
+        index = this.props.outputSeries.bisect(this.state.tracker);
+     }
+     let output = null;
+     let mains = null;
+     let solar = null;
+     if (index) {
+       output = this.state.active.output && this.props.outputSeries.at(index).get("output");
+       mains = this.state.active.mains && this.props.mainsSeries.at(index).get("mains");
+       solar = this.state.active.solar && this.props.solarSeries.at(index).get("solar");
+     }
      return <ChartContainer
-        title="Overview - Output, Mains, Solar"
-        style={{
-          background: "#201d1e",
-          borderRadius: 8,
-          borderStyle: "solid",
-          borderWidth: 1,
-          borderColor: "#232122"
-      }}
-      timeAxisStyle={darkAxis}
-      titleStyle={{
-        color: "#EEE",
-        fontWeight: 500
-      }}
-      padding={20}
-      paddingTop={5}
-      paddingBottom={0}
-      enableDragZoom
-      onTimeRangeChanged={this.handleTimeRangeChange}
-      timeRange={this.state.timerange}
-      maxTime={this.props.outputSeries.range().end()}
-      minTime={this.props.outputSeries.range().begin()}
-      >
-       <ChartRow height="600">
-        <YAxis
-            id="axis1"
-            showGrid
-            hideAxisLine
-            transition={300}
-            style={darkAxis}
-            labelOffset={-10}
-            min={0}
-            max={this.state.max}
-            format=",.0f"
-            width="60"
-            type="linear"
-          />
-          <Charts>{charts}</Charts>
+          title={this.state.tracker ? `Time ${time} ${output ? `| Output ${output}` : ``} ${mains ? `| Mains ${mains}` : ``} ${solar ? `| Solar ${solar}` : ``}` : ''}
+          style={{
+            background: "#201d1e",
+            borderRadius: 8,
+            borderStyle: "solid",
+            borderWidth: 1,
+            borderColor: "#232122"
+          }}
+          timeAxisStyle={darkAxis}
+          titleStyle={{
+            color: "#EEE",
+            fontWeight: 500
+          }}
+          padding={20}
+          paddingTop={5}
+          paddingBottom={0}
+          enableDragZoom
+          onTimeRangeChanged={this.handleTimeRangeChange}
+          timeRange={this.state.timerange}
+          maxTime={this.props.outputSeries.range().end()}
+          minTime={this.props.outputSeries.range().begin()}
+          // onMouseMove={(x, y) => this.handleMouseMove(x, y)}
+          onTrackerChanged={this.handleTrackerChanged}
+        >
+        <ChartRow height="600">
           <YAxis
-            id="axis2"
-            hideAxisLine
-            transition={300}
-            style={darkAxis}
-            labelOffset={12}
-            min={0}
-            format=",.0f"
-            max={this.state.max}
-            width="80"
-            type="linear"
-          />
-       </ChartRow>
-      </ChartContainer>
+              id="axis1"
+              showGrid
+              hideAxisLine
+              transition={300}
+              style={darkAxis}
+              labelOffset={-10}
+              min={0}
+              max={this.state.max}
+              format=",.0f"
+              width="60"
+              type="linear"
+            />
+            <Charts>
+              {charts}
+            </Charts>
+            <YAxis
+              id="axis2"
+              hideAxisLine
+              transition={300}
+              style={darkAxis}
+              labelOffset={12}
+              min={0}
+              format=",.0f"
+              max={this.state.max}
+              width="80"
+              type="linear"
+            />
+        </ChartRow>
+        </ChartContainer>
    }
 
    render() {
@@ -248,6 +301,11 @@ class Chart extends React.Component
          disabled: !this.state.active.solar
        }
      ]
+
+     let time = null;
+     if (this.state.tracker) {
+       
+     }
 
      return (
        <div>
@@ -272,7 +330,6 @@ const ChartDataContainer = () => {
 
   const [forDate, setForDate] = useState();
   const { id } = useParams();
-  console.log(forDate);
   const { loading, error, data } = useQuery(DEVICE_DATA, {
     variables: { deviceId: id, forDate },
     skip: !forDate

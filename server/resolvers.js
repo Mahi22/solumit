@@ -293,21 +293,21 @@ fragment CluiOutput on CluiOutput {
         case "excel":
           const fordate = moment(args.date).toISOString();
           return {
-            success: `http://139.59.37.105:8080/excel?startDate=${fordate}&endDate=${fordate}&deviceId=${
+            success: `http://139.59.37.105:4000/excel?startDate=${fordate}&endDate=${fordate}&deviceId=${
               args.deviceId
             }`
           };
         case "changeLogs":
           const changeLogdate = moment(args.date).format("DD_MM_YYYY");
           return {
-            success: `http://139.59.37.105:8080/logs/device${
+            success: `http://139.59.37.105:4000/logs/device${
               args.deviceId
             }_change_${changeLogdate}.log`
           };
         case "allLogs":
           const logdate = moment(args.date).format("DD_MM_YYYY");
           return {
-            success: `http://139.59.37.105:8080/logs/device${
+            success: `http://139.59.37.105:4000/logs/device${
               args.deviceId
             }_${logdate}.log`
           };

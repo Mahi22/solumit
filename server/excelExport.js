@@ -33,27 +33,14 @@ module.exports = app => {
 
     const querybuilder = db(`device${req.query.deviceId || 3}`).select("*");
 
-    console.log(
-      moment(req.query.startDate)
-        .startOf("day")
-        .subtract("5.5", "hours")
-        .toString()
-    );
-    console.log(
-      moment(req.query.endDate)
-        .endOf("day")
-        .subtract("5.5", "hours")
-        .toString()
-    );
-
     if (req.query.startDate) {
       querybuilder.where(
         "fortime",
         ">=",
         moment(req.query.startDate)
           .startOf("day")
-          .subtract("5.5", "hours")
-          .toString()
+          // .subtract("5.5", "hours")
+          .toISOString()
       );
     }
 
@@ -63,8 +50,8 @@ module.exports = app => {
         "<",
         moment(req.query.endDate)
           .endOf("day")
-          .subtract("5.5", "hours")
-          .toString()
+          // .subtract("5.5", "hours")
+          .toISOString()
       );
     }
 
