@@ -5,12 +5,21 @@ import {
 } from 'apollo-cache-inmemory';
 import { ApolloLink } from 'apollo-link';
 import { HttpLink } from 'apollo-link-http';
+import { WebSocketLink } from "apollo-link-ws";
 import { onError } from 'apollo-link-error';
 
 import introspectionQueryResultData from './fragmentTypes.json';
 
 const fragmentMatcher = new IntrospectionFragmentMatcher({
   introspectionQueryResultData
+});
+
+// Create a WebSocket link:
+const wsLink = new WebSocketLink({
+  uri: `ws://localhost:4000/graphql`,
+  options: {
+    reconnect: true
+  }
 });
 
 const client = new ApolloClient({
@@ -27,6 +36,7 @@ const client = new ApolloClient({
         console.log(`[Network error]: ${networkError}`);
       }
     }),
+    wsLink,
     new HttpLink({ uri: 'http://localhost:4000/graphql' })
   ]),
   cache: new InMemoryCache({ fragmentMatcher })

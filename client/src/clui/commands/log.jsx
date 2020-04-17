@@ -3,6 +3,7 @@ import { useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import PromptIcon from '../PromptIcon';
 import Row from '../Row';
+// import Traffic from '../../components/Traffic';
 
 const LOGREQUEST = gql`
   mutation logRequest($deviceId: String!, $date: String!, $type: String!) {
@@ -17,8 +18,10 @@ function typeDisplay(type) {
   switch(type) {
     case 'excel':
       return 'Energy Excel Report';
-    case 'change':
-      return 'Change Log CSV Report';
+    case 'changeLogs':
+      return 'Change Logs';
+    case 'allLogs':
+      return 'All Logs';
     default:
       return '';
   }
@@ -60,9 +63,10 @@ const Device = props => {
       return (
         <Row>
           <PromptIcon success />
-      <a href="https://google.com" target="_blank">Download Link for {typeDisplay(type)} - {date}</a>
+      <a href={data.logRequest.success} target="_blank">Download Link for {typeDisplay(type)} - {date}</a>
         </Row>
       );
+      // return <Traffic />;
     } else if (data && data.logRequest.error) {
       return (
         <Row>
@@ -99,7 +103,8 @@ const Device = props => {
         <label>Export Type:</label>
         <select required onChange={e => setType(e.target.value)}>
           <option value="excel">Energy Excel</option>
-          <option value="change">Change Logs</option>
+          <option value="changeLogs">Change Logs</option>
+          <option value="allLogs">All Logs</option>
         </select>
       </div>
       <div>

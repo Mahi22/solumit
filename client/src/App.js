@@ -12,7 +12,7 @@ import Home from "./Pages/Home";
 
 // Create an http link:
 const httpLink = new HttpLink({
-  uri: "http://localhost:4000"
+  uri: "http://localhost:4000/graphql"
 });
 
 // Create a WebSocket link:

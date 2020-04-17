@@ -18,7 +18,7 @@ export default () => {
           color: "#fff"
         }}
       >
-        Real-time Dashboard demo
+        Solace Dashboard - Device 1
       </h1>
     </div>
   );

@@ -11,6 +11,7 @@ import MutationPrompt from './MutationPrompt';
 import clear from './commands/clear';
 import email from './commands/email';
 import log from './commands/log';
+import route from './commands/route';
 
 import Prompt from './Prompt';
 
@@ -96,6 +97,12 @@ const Terminal = () => {
       ...command.commands,
       email: email(search),
       log: log(searchDevice),
+      view: {
+        description: 'View Page',
+        commands: {
+          chart: route(searchDevice, 'charts')
+        }
+      },
       clear
     };
   }

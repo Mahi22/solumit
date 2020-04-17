@@ -1,14 +1,29 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { ApolloProvider } from '@apollo/react-hooks';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route
+} from 'react-router-dom';
 import client from './apollo';
 import 'draft-js/dist/Draft.css';
 
 import Terminal from './clui/Terminal';
+import Charts from './Pages/Chart';
 
 const App = () => (
   <ApolloProvider client={client}>
-    <Terminal />
+    <Router>
+      <Switch>
+        <Route path="/charts/:id">
+          <Charts />
+        </Route>
+        <Route path="/">
+          <Terminal />
+        </Route>
+      </Switch>
+    </Router>
     <style jsx global>
       {`
         body * {
@@ -17,6 +32,7 @@ const App = () => (
         body {
           margin: 0;
           font-family: 'Inconsolata', monospace;
+          background: #222;
         }
         table {
           display: block;

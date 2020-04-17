@@ -12,17 +12,26 @@
   "dependencies": {
     "@replit/clui-gql": "^0.0.7",
     "apollo-server": "^2.4.2",
+    "apollo-server-express": "^2.12.0",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "exceljs": "^3.8.2",
+    "express": "^4.17.1",
     "graphql": "^14.1.1",
     "graphql-redis-subscriptions": "^2.0.0",
-    "graphql-subscriptions": "^1.0.0",
+    "graphql-subscriptions": "^1.1.0",
     "ioredis": "^4.6.2",
+    "ix": "^3.0.2",
     "json2md": "^1.7.0",
     "knex": "^0.20.14",
     "markdown-it": "^10.0.0",
+    "mathjs": "^6.6.4",
     "moment": "^2.24.0",
-    "particle-api-js": "^8.3.0"
+    "particle-api-js": "^8.3.0",
+    "pg": "^8.0.2",
+    "pg-query-stream": "^3.0.6",
+    "subscriptions-transport-ws": "^0.9.16"
   },
   "devDependencies": {
     "eslint": "^5.14.0",

@@ -11,6 +11,21 @@ const {
   trafficData
 } = require("./utils/generator");
 const { get, set } = require("./utils/redis");
+const deviceData = require("./deviceData");
+
+// const db = knex({
+//   client: process.env.DB_CLIENT || "pg",
+//   connection: {
+//     host: process.env.DB_HOST,
+//     user: process.env.DB_USER,
+//     socketPath: process.env.DB_SOCKET_PATH,
+//     password: process.env.DB_PASSWORD,
+//     database: process.env.DB_DATABASE,
+//     ssl: process.env.DB_SSL,
+//     multipleStatements: true,
+//     charset: "utf8"
+//   }
+// });
 
 const COMPONENTS = {
   CPU: "cpu",
@@ -129,7 +144,12 @@ fragment CluiOutput on CluiOutput {
     cpu: () => get(COMPONENTS.CPU),
     traffic: () => get(COMPONENTS.TRAFFIC),
     distribution: () => get(COMPONENTS.DISTRIBUTION),
-    messages: () => get(COMPONENTS.MESSAGES)
+    messages: () => get(COMPONENTS.MESSAGES),
+    deviceData: (ctx, args) => {
+      console.log("Got Request", args);
+      // return [];
+      return deviceData(args.deviceId, args.forDate);
+    }
   },
   Clui: {
     contacts: () => ({}),
@@ -194,7 +214,7 @@ fragment CluiOutput on CluiOutput {
       var particle = new Particle();
 
       var token = "1efe3ec01ee1c716498e13b4a988dfc51d6f63c9";
-      var ListPr = particle.listDevices({ auth: token });
+      var devicesPr = particle.listDevices({ auth: token });
 
       return devicesPr.then(
         function(devices) {
@@ -271,8 +291,25 @@ fragment CluiOutput on CluiOutput {
       console.log(args);
       switch (args.type) {
         case "excel":
+          const fordate = moment(args.date).toISOString();
           return {
-            success: "Link"
+            success: `http://139.59.37.105:8080/excel?startDate=${fordate}&endDate=${fordate}&deviceId=${
+              args.deviceId
+            }`
+          };
+        case "changeLogs":
+          const changeLogdate = moment(args.date).format("DD_MM_YYYY");
+          return {
+            success: `http://139.59.37.105:8080/logs/device${
+              args.deviceId
+            }_change_${changeLogdate}.log`
+          };
+        case "allLogs":
+          const logdate = moment(args.date).format("DD_MM_YYYY");
+          return {
+            success: `http://139.59.37.105:8080/logs/device${
+              args.deviceId
+            }_${logdate}.log`
           };
         default:
           return { error: "Params missing" };

@@ -84,9 +84,28 @@ const schema = gql`
     color: String!
   }
 
+  type DeviceData {
+    fortime: String!
+    output: Float
+    mains: Float
+    solar: Float
+  }
+
+  type maxDeviceData {
+    output: Float
+    mains: Float
+    solar: Float
+  }
+
+  type DeviceDataPayload {
+    max: maxDeviceData
+    values: [DeviceData]
+  }
+
   type Query {
     search(query: String): [Contact!]!
     searchDevice(query: String): [DeviceInfo!]
+    deviceData(deviceId: String!, forDate: String!): DeviceDataPayload
     clui: Clui!
     command: String!
     cpu: CPU

@@ -34,24 +34,27 @@ export default class Home extends Component {
           <Row type="flex" gutter={8}>
             <Col span={6}>
               <CpuUsage />
-              <Label title="Avg CPU Usage" />
+              <Label title="Avg Usage" />
             </Col>
             <Col span={12}>
               <Traffic />
-              <Label title="Traffic heartbeat" />
+              <Label title="Usage" />
             </Col>
-            <Col span={6}>
-              <Distribution />
-              <Label title="Region Distribution" />
-            </Col>
-          </Row>
-          <br />
-          <h2>Alerts</h2>
-          <Row type="flex" gutter={8}>
-            <Messages />
           </Row>
         </div>
       </div>
     );
   }
 }
+
+/**
+ <Col span={6}>
+              <Distribution />
+              <Label title="Region Distribution" />
+            </Col>
+  <br />
+          <h2>Alerts</h2>
+          <Row type="flex" gutter={8}>
+            <Messages />
+          </Row>
+ */
