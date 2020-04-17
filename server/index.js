@@ -21,7 +21,7 @@ app.use(cors());
 
 server.applyMiddleware({ app, path: "/graphql" });
 
-app.use("/logs", express.static("logs"));
+app.use("/logs", express.static(path.join(__dirname, "../worker/logs")));
 
 app.use(bodyParser.json());
 
