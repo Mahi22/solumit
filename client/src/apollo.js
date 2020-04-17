@@ -14,9 +14,13 @@ const fragmentMatcher = new IntrospectionFragmentMatcher({
   introspectionQueryResultData
 });
 
+const SERVER = process.env.NODE_ENV === 'development' ? 'localhost' : '139.59.37.105';
+
+console.log(SERVER);
+
 // Create a WebSocket link:
 const wsLink = new WebSocketLink({
-  uri: `ws://localhost:8080/graphql`,
+  uri: `ws://${SERVER}:8080/graphql`,
   options: {
     reconnect: true
   }
@@ -37,7 +41,7 @@ const client = new ApolloClient({
       }
     }),
     wsLink,
-    new HttpLink({ uri: 'http://localhost:8080/graphql' })
+    new HttpLink({ uri: `http://${SERVER}:8080/graphql` })
   ]),
   cache: new InMemoryCache({ fragmentMatcher })
 });

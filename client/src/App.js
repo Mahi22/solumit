@@ -10,14 +10,16 @@ import { getMainDefinition } from "apollo-utilities";
 import './App.css'
 import Home from "./Pages/Home";
 
+const SERVER = process.env.NODE_ENV === 'development' ? 'localhost' : '139.59.37.105';
+
 // Create an http link:
 const httpLink = new HttpLink({
-  uri: "http://localhost:8080/graphql"
+  uri: `http://${SERVER}:8080/graphql`
 });
 
 // Create a WebSocket link:
 const wsLink = new WebSocketLink({
-  uri: `ws://localhost:8080/graphql`,
+  uri: `ws://${SERVER}:8080/graphql`,
   options: {
     reconnect: true
   }

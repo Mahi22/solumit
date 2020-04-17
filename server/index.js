@@ -36,10 +36,12 @@ server.installSubscriptionHandlers(httpServer);
 // });
 httpServer.listen({ port: PORT }, () => {
   console.log(
-    `🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`
+    `🚀 Server ready at http://${process.env.SERVER}:${PORT}${
+      server.graphqlPath
+    }`
   );
   console.log(
-    `🚀 Subscriptions ready at ws://localhost:${PORT}${
+    `🚀 Subscriptions ready at ws://${process.env.SERVER}:${PORT}${
       server.subscriptionsPath
     }`
   );

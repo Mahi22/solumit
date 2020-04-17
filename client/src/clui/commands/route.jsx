@@ -3,6 +3,8 @@ import Controls from '../Controls';
 import PromptIcon from '../PromptIcon';
 import Row from '../Row';
 
+const SERVER = process.env.NODE_ENV === 'development' ? 'localhost' : '139.59.37.105';
+
 // const Email = props => {
 //   const ta = React.useRef(null);
 //   const [value, setValue] = React.useState('');
@@ -82,7 +84,7 @@ const RoutePage = props => {
     //   props.item.session.reset();
     // }
     if (props.item) {
-      var win = window.open(`http://localhost:3000/${props.page}/${props.device.id}`, '_blank');
+      var win = window.open(`http://${SERVER}:8080/${props.page}/${props.device.id}`, '_blank');
       win.focus();
       props.item.next();
     }

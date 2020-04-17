@@ -43,8 +43,8 @@
     "react-app-rewired": "^2.1.5"
   },
   "scripts": {
-    "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
+    "start": "SERVER=localhost react-app-rewired start",
+    "build": "SERVER=139.59.37.105  react-app-rewired build",
     "test": "react-app-rewired test",
     "eject": "react-app-rewired eject"
   },

@@ -12,6 +12,8 @@ import 'draft-js/dist/Draft.css';
 import Terminal from './clui/Terminal';
 import Charts from './Pages/Chart';
 
+console.log(process.env, '----------------');
+
 const App = () => (
   <ApolloProvider client={client}>
     <Router>
