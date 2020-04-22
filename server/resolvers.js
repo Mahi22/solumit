@@ -92,6 +92,9 @@ module.exports = {
 
       return filtered;
     },
+    fetchInfo: (ctx, args) => {
+      return { devices: deviceList };
+    },
     searchDevice: (ctx, args) => {
       const filtered = args.query
         ? deviceList.filter(

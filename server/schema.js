@@ -102,9 +102,15 @@ const schema = gql`
     values: [DeviceData]
   }
 
+  type fetchInfoPayload {
+    devices: [DeviceInfo]
+    error: String
+  }
+
   type Query {
     search(query: String): [Contact!]!
     searchDevice(query: String): [DeviceInfo!]
+    fetchInfo: fetchInfoPayload
     deviceData(deviceId: String!, forDate: String!): DeviceDataPayload
     clui: Clui!
     command: String!

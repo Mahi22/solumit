@@ -3,9 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@essentials/request-interval": "^1.0.3",
     "@reach/tabs": "^0.1.6",
     "body-scroll-lock": "^2.6.4",
     "moment": "^2.24.0",
+    "overmind": "^23.0.1",
+    "overmind-graphql": "^3.0.1",
+    "overmind-react": "^24.0.1",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
     "react-router": "^5.1.2",
@@ -15,6 +19,7 @@
     "react-use-gesture": "^6.0.3",
     "rematrix": "^0.4.1",
     "rmwc": "^6.0.14",
+    "screenfull": "^5.0.2",
     "styled-components": "^4.4.0"
   },
   "scripts": {

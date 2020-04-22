@@ -1,10 +1,11 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Switch, Route, useLocation, useHistory } from "react-router-dom"
+import { createHook } from 'overmind-react'
 import styled from "styled-components"
 import { ThemeProvider } from '@rmwc/theme'
 import { TopAppBar, TopAppBarRow, TopAppBarSection, TopAppBarNavigationIcon, TopAppBarTitle } from "@rmwc/top-app-bar"
 import { TabBar, Tab } from '@rmwc/tabs'
-import { Drawer, DrawerHeader, DrawerTitle, DrawerSubtitle, DrawerContent } from '@rmwc/drawer'
+import { Drawer, DrawerHeader, DrawerTitle, DrawerContent } from '@rmwc/drawer'
 import { List, ListItem } from '@rmwc/list'
 import GlobalStyle from "./GlobalStyle"
 import Today from './pages/Today'
@@ -14,23 +15,6 @@ import Overall from './pages/Overall'
 
 import useDimensions from './hooks/useDimensions'
 import useWindowSize from "./hooks/useWindowSize"
-
-const StyledNav = styled.nav`
-  padding: 1.5rem;
-  li {
-    display: block;
-    margin-bottom: 1.5rem;
-    font-size: 1.1rem;
-  }
-  h1 {
-    font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont,
-      "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
-      "Helvetica Neue", sans-serif;
-    font-weight: bold;
-    margin-bottom: 1.5rem;
-    font-size: 1.5rem;
-  }
-`
 
 const MessageWrapper = styled.div`
   display: none;
@@ -57,6 +41,8 @@ const StyledTab = styled(Tab)`
   }
 `
 
+const useOvermind = createHook()
+
 
 const MobileWarning = () => {
   return (
@@ -74,13 +60,24 @@ const routes = [
 ]
 
 function App() {
+  const { state, actions } = useOvermind()
   const { height } = useWindowSize()
   const [ref, { topBarHeight }] = useDimensions({ selector: 'topBar' })
   const location = useLocation()
   const history = useHistory()
   const [open, setOpen] = useState(false)
 
+  useEffect(() => {
+    actions.fetchInfo()
+  }, [])
+
+  const isReady = Boolean(state.matches({
+    READY: true
+  }) && topBarHeight)
+
   const selectedIndex = routes.map(r => r.path).indexOf(location.pathname)
+
+  const devices = state.devices.devices ? state.devices.devices.map(d => d.location).concat('Logout') : ['Logout']
   return (
     <div style={{ height }}>
       <MobileWarning />
@@ -92,20 +89,31 @@ function App() {
           textPrimaryOnBackground: '#FFFFFF'
         }}
       >
-        <Drawer modal open={open} onClose={() => setOpen(false)}>
-              <DrawerHeader>
-                <DrawerHeader>
-                  <DrawerTitle>Username</DrawerTitle>
-                </DrawerHeader>
-                <DrawerContent>
-                  <List>
-                    <ListItem>Device 1</ListItem>
-                    <ListItem>Device 2</ListItem>
-                    <ListItem>Logout</ListItem>
-                  </List>
-                </DrawerContent>
-              </DrawerHeader>
-            </Drawer>
+        {isReady && (
+          <Drawer modal open={open} onClose={() => setOpen(false)}>
+            <DrawerHeader>
+                  <DrawerHeader>
+                    <DrawerTitle>Username</DrawerTitle>
+                  </DrawerHeader>
+                  <DrawerContent>
+                    <List
+                      onAction={evt => {
+                        if (evt.detail.index === (devices.length - 1)) {
+                          console.log('Logout')
+                        } else {
+                          // console.log(state.devices.devices[evt.detail.index])
+                          // actions.selectDevice(state.devices.devices[evt.detail.index])
+                        }
+                      }}
+                    >
+                      {devices.map(d => {
+                        return <ListItem key={d} activated={state.activeDevice.location === d}>{d}</ListItem>
+                      })}
+                    </List>
+                  </DrawerContent>
+            </DrawerHeader>
+          </Drawer>
+        )}
         <GlobalStyle />
             <TopAppBar onNav={() => setOpen(true)} ref={ref}>
                   <TopAppBarRow>
@@ -130,7 +138,7 @@ function App() {
             </TopAppBar>
             <div style={{ height: topBarHeight }} />
             {
-              topBarHeight ?
+              isReady ?
               (
                 <div style={{ height: height - topBarHeight }}>
                   <Switch>

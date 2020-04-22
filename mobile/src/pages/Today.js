@@ -1,9 +1,21 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import moment from 'moment'
+import { requestInterval, clearRequestInterval } from '@essentials/request-interval'
+import { createHook } from 'overmind-react'
 import { Typography } from '@rmwc/typography'
-import { Icon } from '@rmwc/icon'
+import { CircularProgress } from '@rmwc/circular-progress'
+
+import Chart from './Chart'
 import { Vertical, Horizontal } from '../styles'
+
+import useDimensions from '../hooks/useDimensions'
+
+import { ReactComponent as IconSolar } from '../assets/solar.svg'
+import { ReactComponent as IconGrid } from '../assets/grid.svg'
+import { ReactComponent as IconOutput } from '../assets/output.svg'
+
+const useOvermind = createHook()
 
 const LeftDiv = styled(Typography)`
   display: inline-block;
@@ -16,7 +28,7 @@ const RightDiv = styled(Typography)`
   line-height: 28px;
   span {
     font-weight: 100;
-    font-size: 16px;
+    font-size: 12px;
   }
 `
 
@@ -28,11 +40,41 @@ const EnergyValue = styled(Typography)`
   font-weight: 700;
 `
 
+const toExactMinute = 60000 - (new Date().getTime() % 60000)
+
 const Today = (props) => {
-  const { height } = props;
-  const today = moment();
+  const { height } = props
+  const [today, updateToday] = useState(moment())
+  const { state, reaction, actions } = useOvermind()
+  const [ref, { infoHeight }] = useDimensions({ selector: 'info' })
+
+  useEffect(() => {
+    // fetching todaysData
+    actions.fetchTodayDeviceData()
+    let timer = null;
+    const timerStart = setTimeout(() => {
+      timer = requestInterval(() => {
+        console.log('FETCH TODAY DATA')
+        actions.fetchTodayDeviceData()
+        updateToday(moment())
+      }, 60000);
+      actions.fetchTodayDeviceData()
+      updateToday(moment())
+    }, toExactMinute)
+    return () => {
+      clearTimeout(timerStart)
+      if (timer) clearRequestInterval(timer)
+    }
+  }, [])
+
+  useEffect(() => reaction(
+    ({ activeDevice }) => activeDevice,
+    () => {
+      actions.fetchTodayDeviceData()
+    } 
+  ))
   return <>
-    <Vertical style={{ height: height - 48 }}>
+    <Vertical ref={ref}>
       <Horizontal style={{ margin: 8 }}>
         <Horizontal flex="1">
           <div>
@@ -57,7 +99,7 @@ const Today = (props) => {
           </div>
         </Horizontal>
       </Horizontal>
-      <Vertical flex="1" center style={{ backgroundColor: '#F5F5F5', color: '#626262' }}>
+      <Vertical center style={{ backgroundColor: '#F5F5F5', color: '#626262', padding: 8 }}>
         <EnergyLabel use="headline5">
           Today's Energy Generation is
         </EnergyLabel>
@@ -65,23 +107,36 @@ const Today = (props) => {
           155 kWh
         </EnergyValue>
         <EnergyLabel use="headline5">
-          @ Sindh Colony
+          @ {state.activeDevice.location}
         </EnergyLabel>
       </Vertical>
-      <Horizontal center spaceBetween flex="1">
-        <Vertical center flex="1">
-          <Typography use=""></Typography>
-          <Icon icon="flash_on" />
-          <Typography use="body1">Solar</Typography>
-        </Vertical>
-        <Vertical center flex="1">
-          Grid
-        </Vertical>
-        <Vertical center flex="1">
-          Inverter
-        </Vertical>
-      </Horizontal>
+      {
+        state.deviceData.today ? (
+          <Horizontal center spaceBetween>
+            <Vertical center flex="1">
+              <Typography use="headline4">150</Typography>
+              <IconSolar />
+              <Typography use="body1">Solar</Typography>
+            </Vertical>
+            <Vertical center flex="1">
+              <Typography use="headline4">150</Typography>
+              <IconGrid />
+              <Typography use="body1">Grid</Typography>
+            </Vertical>
+            <Vertical center flex="1">
+              <Typography use="headline4">150</Typography>
+              <IconOutput />
+              <Typography use="body1">Inverter</Typography>
+            </Vertical>
+          </Horizontal>
+        ) : (
+          <Horizontal center style={{ height: 108 }}>
+            <CircularProgress size="large" />
+          </Horizontal>
+        )
+      }
     </Vertical>
+    {infoHeight && <Chart data={state.deviceData.today} height={height - infoHeight} />}
   </>
 }
 
