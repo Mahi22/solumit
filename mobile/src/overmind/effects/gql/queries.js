@@ -30,3 +30,15 @@ export const deviceData = gql`
     }
   }
 `
+
+export const dayDeviceData = gql`
+  query dayDeviceData($deviceId: String!, $forDate: String!) {
+    dayDeviceData(deviceId: $deviceId, forDate: $forDate) {
+      fortime
+      energy
+      output
+      mains
+      solar
+    }
+  }
+`

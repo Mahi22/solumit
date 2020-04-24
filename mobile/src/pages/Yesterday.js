@@ -31,71 +31,43 @@ const RightDiv = styled(Typography)`
 
 const toExactMinute = 60000 - (new Date().getTime() % 60000)
 
-const Today = (props) => {
+const Yesterday = (props) => {
   const { height, width } = props
-  const [today, updateToday] = useState(moment())
   const { state, reaction, actions } = useOvermind()
 
-  useEffect(() => {
-    // fetching todaysData
-    const today = moment()
-    actions.fetchDeviceData(today)
-    let timer = null;
-    const timerStart = setTimeout(() => {
-      timer = requestInterval(() => {
-        // actions.fetchDeviceData(today)
-        updateToday(today)
-      }, 60000);
-      // actions.fetchDeviceData(today)
-      updateToday(today)
-    }, toExactMinute)
+  const yesterday = moment().subtract(1, 'day')
 
-    const fetchTimer = requestInterval(() => {
-      actions.fetchDeviceData(today)
-    }, 600000)
-    return () => {
-      clearTimeout(timerStart)
-      if (timer) clearRequestInterval(timer)
-      if (fetchTimer) clearRequestInterval(fetchTimer)
-    }
+  useEffect(() => {
+    console.log('CALL FOR DATA')
+    actions.fetchDeviceData(yesterday)
   }, [])
 
   useEffect(() => reaction(
     ({ activeDevice }) => activeDevice,
     () => {
-      actions.fetchDeviceData(moment())
+      actions.fetchDeviceData(yesterday)
     } 
   ))
   return <>
     <Vertical>
       <Horizontal style={{ margin: 8 }}>
-        <Horizontal flex="1">
+        <Horizontal center flex="1">
           <div>
             <LeftDiv use="headline3">
-              {today.format('hh')}
+              {yesterday.format('DD')}
             </LeftDiv>
             <RightDiv use="headline5">
-              {today.format('mm')}<br /><span>{today.format('A')}</span>
-            </RightDiv>
-          </div>
-        </Horizontal>
-        <Horizontal flex="1">
-          <div>
-            <LeftDiv use="headline3">
-              {today.format('DD')}
-            </LeftDiv>
-            <RightDiv use="headline5">
-              {today.format('MMMM')}
+              {yesterday.format('MMMM')}
               <br />
-              <span>{today.format('dddd')} {today.format('YYYY')}</span>
+              <span>{yesterday.format('dddd')} {yesterday.format('YYYY')}</span>
             </RightDiv>
           </div>
         </Horizontal>
       </Horizontal>
     </Vertical>
     {
-      state.deviceData[today.format('DD_MM_YY')] ? (
-        <Chart forDate={today.toISOString()} data={state.deviceData[today.format('DD_MM_YY')]} height={height - 88} width={width} />
+      state.deviceData[yesterday.format('DD_MM_YY')] ? (
+        <Chart forDate={yesterday.toISOString()} data={state.deviceData[yesterday.format('DD_MM_YY')]} height={height - 88} width={width} />
       ) : (
         <Horizontal center style={{ height: 108 }}>
           <CircularProgress size="large" />
@@ -105,4 +77,4 @@ const Today = (props) => {
   </>
 }
 
-export default Today
+export default Yesterday

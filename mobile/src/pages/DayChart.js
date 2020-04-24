@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { TimeSeries, avg } from 'pondjs'
+import styled from 'styled-components'
+import moment from 'moment'
+import { TimeSeries, TimeRange, Index } from 'pondjs'
 import { Resizable, ChartContainer, ChartRow, Charts, YAxis, styler, BarChart, AreaChart } from 'react-timeseries-charts'
 import { Typography } from '@rmwc/typography'
 
@@ -9,6 +11,13 @@ import { ReactComponent as IconSolar } from '../assets/solar.svg'
 import { ReactComponent as IconGrid } from '../assets/grid.svg'
 import { ReactComponent as IconOutput } from '../assets/output.svg'
 
+const EnergyLabel = styled(Typography)`
+  font-weight: 100;
+`
+
+const EnergyValue = styled(Typography)`
+  font-weight: 700;
+`
 
 const style = styler([
   { key: "mains", color: "#C67B00" }, //BED4EF
@@ -16,60 +25,68 @@ const style = styler([
   { key: "output", color: "#BED4EF", highlight: null, selection: null }
 ])
 
-const Chart = ({ data: { values }, height, width }) => {
+const Chart = ({ data, height, width, forDate = null }) => {
   const [mainsSeries, setMainSeries] = useState(null)
   const [outputSeries, setOutputSeries] = useState(null)
   const [solarSeries, setSolarSeries] = useState(null)
-  // const [timeRangeSeries, setTimeRangeSeries] = useState(null)
+  const [energy, setEnergy] = useState('')
   const [timeRange, setTimeRange] = useState(null)
 
   useEffect(() => {
-    if (timeRange === null || (timeRange.begin() === outputSeries.range().begin() && timeRange.end() === outputSeries.range().end())) {
-      setMainSeries(new TimeSeries({
-        name: "mains",
-        columns: ["time", "mains"],
-        points: values.map(({ fortime, mains }) => [fortime, mains])
-      }))
-  
-      setSolarSeries(new TimeSeries({
-        name: "solar",
-        columns: ["time", "solar"],
-        points: values.map(({ fortime, solar }) => [fortime, solar])
-      }))
-  
-      const opSeries = new TimeSeries({
-        name: "output",
-        columns: ["time", "output"],
-        points: values.map(({ fortime, output }) => [fortime, output])
+    setMainSeries(new TimeSeries({
+      name: "mains",
+      columns: ["index", "mains"],
+      points: data.map(({ fortime, mains }) => {
+        return [Index.getIndexString("2h", new Date(parseInt(fortime))), mains]
       })
-  
-      setOutputSeries(opSeries)
-      // setTimeRangeSeries(opSeries)
-      setTimeRange(opSeries.range())
-    }
-  }, [values])
+    }))
+
+    setSolarSeries(new TimeSeries({
+      name: "solar",
+      columns: ["index", "solar"],
+      points: data.map(({ fortime, solar }) => [Index.getIndexString("2h", new Date(parseInt(fortime))), solar])
+    }))
+
+    const opSeries = new TimeSeries({
+      name: "output",
+      columns: ["time", "output"],
+      points: data.map(({ fortime, output }) => [parseInt(fortime), output])
+    })
+
+    setOutputSeries(opSeries)
+    // setTimeRange(opSeries.range())
+    const beginTime = forDate ? moment(forDate).startOf('day') : moment().startOf('day')
+    const endTime = forDate ? moment(forDate).endOf('day') : moment().endOf('day')
+    // setTimeRange(new TimeRange(forDate.startOf('day'), forDate.endOf('day')))
+    setTimeRange(new TimeRange(beginTime, endTime))
+    // setTimeRange(opSeries.range())
+    setEnergy(data.reduce((acc, { energy }) => acc + energy, 0))
+  }, [data])
 
   if (mainsSeries === null || solarSeries === null || solarSeries === null) {
     return null
   }
 
-  // console.log(mainsSeries.toJSON())
-  // const windowSize = Math.round(mainsSeries.size() / 24);
-  const mainsResize = mainsSeries.fixedWindowRollup({ windowSize: `2h`, aggregation: { mains: {  mains: avg() } } })
-  const solarResize = solarSeries.fixedWindowRollup({ windowSize: `2h`, aggregation: { solar: {  solar: avg() } } })
-  const outputResize = outputSeries.fixedWindowRollup({ windowSize: `2h`, aggregation: { output: {  output: avg() } } })
-  const maxRange = Math.max(outputSeries.max('output'), mainsResize.max('mains'), solarResize.max('solar'))
+  const maxRange = Math.max(outputSeries.max('output'), mainsSeries.max('mains'), solarSeries.max('solar'))
 
   return (
     <div style={{ height }}>
+      <Vertical center style={{ backgroundColor: '#F5F5F5', color: '#626262', padding: 8 }}>
+        <EnergyLabel use="body2">
+          Today's Energy Generation is
+        </EnergyLabel>
+        <EnergyValue use="headline3">
+          {energy.toFixed(2)} kWh
+        </EnergyValue>
+      </Vertical>
       <Horizontal center spaceBetween>
         <Vertical center flex="1">
-            <Typography use="headline4">{Math.round(solarResize.avg('solar'))}</Typography>
+            <Typography use="headline4">{Math.round(solarSeries.avg('solar'))}</Typography>
             <IconSolar />
             <Typography use="body1">Solar</Typography>
           </Vertical>
         <Vertical center flex="1">
-          <Typography use="headline4">{Math.round(mainsResize.avg('mains'))}</Typography>
+          <Typography use="headline4">{Math.round(mainsSeries.avg('mains'))}</Typography>
           <IconGrid />
           <Typography use="body1">Grid</Typography>
         </Vertical>
@@ -82,17 +99,7 @@ const Chart = ({ data: { values }, height, width }) => {
       <div style={{ height: height - 185 }}>
         <Resizable>
           <ChartContainer
-            // onTimeRangeChanged = {timeRangeChange => {
-            //   setTimeRange(timeRangeChange)
-            //   setMainSeries(mainsSeries.crop(timeRangeChange))
-            //   setOutputSeries(outputSeries.crop(timeRangeChange))
-            //   setSolarSeries(solarSeries.crop(timeRangeChange))
-            // }}
             timeRange={timeRange}
-            // maxTime={timeRangeSeries.range().end()}
-            // minTime={timeRangeSeries.range().begin()}
-            // enableDragZoom
-            // padding={2}
             hideTimeAxis={false}
           >
             <ChartRow height={height - 185} width={width} axisMargin={0}>
@@ -116,27 +123,26 @@ const Chart = ({ data: { values }, height, width }) => {
                 <AreaChart
                   axis="outputAxis"
                   style={style.areaChartStyle()}
-                  series={outputResize}
+                  series={outputSeries}
                   columns={{ up: ["output"], down: [] }}
                   fillOpacity={0.4}
-                  width={110}
-                  interpolation="curveBasis"
+                  interpolation="curveLinear"
                 />
                 <BarChart
                   axis="mainsAxis"
                   style={style}
                   size={14}
-                  // offset={6.5}
+                  offset={6.5}
                   columns={["mains"]}
-                  series={mainsResize}
+                  series={mainsSeries}
                 />
                 <BarChart
                   axis="mainsAxis"
                   style={style}
                   size={14}
-                  // offset={-6.5}
+                  offset={-6.5}
                   columns={["solar"]}
-                  series={solarResize}
+                  series={solarSeries}
                 />
               </Charts>
             </ChartRow>

@@ -2,7 +2,5 @@ export const state = {
   title: 'Solace App',
   devices: [],
   activeDevice: null,
-  deviceData: {
-    today: null
-  }
+  deviceData: {}
 }

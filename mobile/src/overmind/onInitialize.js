@@ -1,4 +1,4 @@
-const SERVER = process.env.NODE_ENV === 'development' ? 'localhost' : 'localhost'; // 139.59.37.105
+const SERVER = process.env.NODE_ENV === 'development' ? '192.168.0.100' : '139.59.37.105';
 
 export const onInitialize = ({ effects }) => {
   effects.gql.initialize({

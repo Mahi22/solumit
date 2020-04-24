@@ -11,7 +11,7 @@ const {
   trafficData
 } = require("./utils/generator");
 const { get, set } = require("./utils/redis");
-const deviceData = require("./deviceData");
+const { deviceData, deviceDayData } = require("./deviceData");
 
 // const db = knex({
 //   client: process.env.DB_CLIENT || "pg",
@@ -148,11 +148,8 @@ fragment CluiOutput on CluiOutput {
     traffic: () => get(COMPONENTS.TRAFFIC),
     distribution: () => get(COMPONENTS.DISTRIBUTION),
     messages: () => get(COMPONENTS.MESSAGES),
-    deviceData: (ctx, args) => {
-      console.log("Got Request", args);
-      // return [];
-      return deviceData(args.deviceId, args.forDate);
-    }
+    deviceData: (ctx, args) => deviceData(args.deviceId, args.forDate),
+    dayDeviceData: (ctx, args) => deviceDayData(args.deviceId, args.forDate)
   },
   Clui: {
     contacts: () => ({}),

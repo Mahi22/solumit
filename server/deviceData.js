@@ -2,7 +2,7 @@ const pg = require("pg");
 const QueryStream = require("pg-query-stream");
 const { fromNodeStream } = require("ix/asynciterable/fromnodestream");
 const { toArray } = require("ix/asynciterable");
-const { map } = require("ix/asynciterable/operators");
+const { map, tap } = require("ix/asynciterable/operators");
 const moment = require("moment");
 const math = require("mathjs");
 const db = require("./db");
@@ -14,6 +14,48 @@ const multiplyNumbers = (a, b) => {
     return 0;
   }
 };
+
+function deviceDayData(deviceId, forDate) {
+  console.log(forDate);
+  const utcOffsetDate = moment(forDate);
+
+  const queryBuilder = db(`device${deviceId}`)
+    .select(
+      db.raw(
+        `time_bucket('2 hours', fortime) as index, avg(ups_opv) as ups_opv, avg(ups_lt) as ups_lt, avg(pfc_vb) as pfc_vb, avg(pfc_io) as pfc_io, avg(mp1_vb) as mp1_vb, avg(pfc_io) as pfc_io, avg(mp1_vb) as mp1_vb, avg(mp1_io)  as mp1_io`
+      )
+    )
+    .whereBetween("fortime", [
+      utcOffsetDate.startOf("day").toISOString(),
+      utcOffsetDate.endOf("day").toISOString()
+    ])
+    .groupBy("index")
+    .orderBy("index");
+
+  const client = new pg.Client(queryBuilder.client.connectionSettings);
+  client.connect();
+  const { sql, bindings } = queryBuilder.toSQL().toNative();
+  const stream = new QueryStream(sql, bindings, {
+    highWaterMark: 100,
+    batchSize: 50
+  });
+  client.query(stream);
+
+  const streamData = fromNodeStream(stream).pipe(
+    map(({ index, ups_opv, ups_lt, pfc_vb, pfc_io, mp1_vb, mp1_io }) => ({
+      fortime: moment(index)
+        .add(30, "minutes")
+        .utcOffset("+5:30"),
+      // fortime: index,
+      energy: (multiplyNumbers(ups_opv, ups_lt) * 30 * 240) / 3600000,
+      output: multiplyNumbers(ups_opv, ups_lt),
+      mains: multiplyNumbers(pfc_vb, pfc_io),
+      solar: multiplyNumbers(mp1_vb, mp1_io)
+    }))
+  );
+
+  return toArray(streamData);
+}
 
 function deviceData(deviceId, forDate) {
   const utcOffsetDate = moment(forDate).utcOffset("+5:30");
@@ -62,4 +104,7 @@ function deviceData(deviceId, forDate) {
   }));
 }
 
-module.exports = deviceData;
+module.exports = {
+  deviceData,
+  deviceDayData
+};

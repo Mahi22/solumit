@@ -86,6 +86,7 @@ const schema = gql`
 
   type DeviceData {
     fortime: String!
+    energy: Float
     output: Float
     mains: Float
     solar: Float
@@ -111,6 +112,7 @@ const schema = gql`
     search(query: String): [Contact!]!
     searchDevice(query: String): [DeviceInfo!]
     fetchInfo: fetchInfoPayload
+    dayDeviceData(deviceId: String!, forDate: String!): [DeviceData]
     deviceData(deviceId: String!, forDate: String!): DeviceDataPayload
     clui: Clui!
     command: String!

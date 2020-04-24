@@ -9,6 +9,7 @@ import { Drawer, DrawerHeader, DrawerTitle, DrawerContent } from '@rmwc/drawer'
 import { List, ListItem } from '@rmwc/list'
 import GlobalStyle from "./GlobalStyle"
 import Today from './pages/Today'
+import Yesterday from './pages/Yesterday'
 import Day from './pages/Day'
 import Month from './pages/Month'
 import Overall from './pages/Overall'
@@ -55,13 +56,14 @@ const MobileWarning = () => {
 const routes = [
   { path: "/month", component: Month, title: "Month" },
   { path: "/day", component: Day, title: "Day" },
+  { path: "/yesterday", component: Yesterday, title: "Yesterday" },
   { path: "/", component: Today, title: "Today" },
   { path: "/overall", component: Overall, title: "Overall" },
 ]
 
 function App() {
   const { state, actions } = useOvermind()
-  const { height } = useWindowSize()
+  const { height, width } = useWindowSize()
   const [ref, { topBarHeight }] = useDimensions({ selector: 'topBar' })
   const location = useLocation()
   const history = useHistory()
@@ -102,7 +104,7 @@ function App() {
                           console.log('Logout')
                         } else {
                           // console.log(state.devices.devices[evt.detail.index])
-                          // actions.selectDevice(state.devices.devices[evt.detail.index])
+                          actions.selectDevice(state.devices.devices[evt.detail.index])
                         }
                       }}
                     >
@@ -119,7 +121,7 @@ function App() {
                   <TopAppBarRow>
                     <TopAppBarSection alignStart>
                       <TopAppBarNavigationIcon icon="menu" />
-                      <TopAppBarTitle>Solace</TopAppBarTitle>
+                      <TopAppBarTitle>{state.activeDevice && state.activeDevice.location || ''}</TopAppBarTitle>
                     </TopAppBarSection>
                   </TopAppBarRow>
                   <StyledTopAppBarRow>
@@ -131,6 +133,7 @@ function App() {
                     >
                       <StyledTab>Month</StyledTab>
                       <StyledTab>Day</StyledTab>
+                      <StyledTab>Yesterday</StyledTab>
                       <StyledTab>Today</StyledTab>
                       <StyledTab>Overall</StyledTab>
                     </TabBar>
@@ -146,7 +149,7 @@ function App() {
                       const Component = r.component
                       return (
                         <Route exact path={r.path} key={r.path}>
-                          <Component height={height - topBarHeight} />
+                          <Component height={height - topBarHeight} width={width} />
                         </Route>
                       )
                     })}

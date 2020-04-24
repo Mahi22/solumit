@@ -17,8 +17,11 @@ export const selectDevice = pipe(
   setActiveDevice()
 )
 
-export const fetchTodayDeviceData = async ({ state, effects }) => {
-  const { deviceData } = await effects.gql.queries.deviceData({ deviceId: state.activeDevice.id, forDate: moment().toISOString() })
-  state.deviceData.today = deviceData
+export const fetchDeviceData = async ({ state, effects }, forDate) => {
+  console.log('Calling', forDate)
+  // const { deviceData } = await effects.gql.queries.deviceData({ deviceId: state.activeDevice.id, forDate: moment('03/03/2020').toISOString() })
+  // state.deviceData.today = deviceData
+  const { dayDeviceData } = await effects.gql.queries.dayDeviceData({ deviceId: state.activeDevice.id, forDate: forDate.toISOString() })
+  state.deviceData[forDate.format('DD_MM_YY')] = dayDeviceData
 }
 

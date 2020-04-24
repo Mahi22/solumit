@@ -44,7 +44,7 @@ export const appChart = {
       on: {
         // showChart: 'DEVICEDATA',
         selectDevice: 'READY',
-        fetchTodayDeviceData: 'READY'
+        fetchDeviceData: 'READY'
       }
       // entry: 'fetchDeviceData'
     }
