@@ -31,6 +31,8 @@ const schema = gql`
     id: String!
     name: String!
     location: String!
+    startDate: String
+    endDate: String
   }
 
   union CluiOutput = CluiSuccessOutput | CluiMarkdownOutput | CluiErrorOutput
@@ -113,6 +115,7 @@ const schema = gql`
     searchDevice(query: String): [DeviceInfo!]
     fetchInfo: fetchInfoPayload
     dayDeviceData(deviceId: String!, forDate: String!): [DeviceData]
+    weekDeviceData(deviceId: String!, forDate: String!): [DeviceData]
     deviceData(deviceId: String!, forDate: String!): DeviceDataPayload
     clui: Clui!
     command: String!

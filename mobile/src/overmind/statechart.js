@@ -44,7 +44,10 @@ export const appChart = {
       on: {
         // showChart: 'DEVICEDATA',
         selectDevice: 'READY',
-        fetchDeviceData: 'READY'
+        fetchDeviceData: 'READY',
+        fetchDeviceWeekData: 'READY',
+        selectDate: 'READY',
+        selectDateWeek: 'READY'
       }
       // entry: 'fetchDeviceData'
     }

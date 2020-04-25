@@ -5,6 +5,7 @@ import { createOvermind } from 'overmind'
 import { Provider } from 'overmind-react'
 import { configWithStatechart } from './overmind'
 import 'rmwc/dist/styles'
+import 'react-nice-dates/build/style.css'
 import App from "./App"
 
 const overmind = createOvermind(configWithStatechart)

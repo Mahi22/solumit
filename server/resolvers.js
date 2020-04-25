@@ -11,7 +11,7 @@ const {
   trafficData
 } = require("./utils/generator");
 const { get, set } = require("./utils/redis");
-const { deviceData, deviceDayData } = require("./deviceData");
+const { deviceData, deviceDayData, deviceWeekData } = require("./deviceData");
 
 // const db = knex({
 //   client: process.env.DB_CLIENT || "pg",
@@ -49,17 +49,20 @@ const deviceList = [
   {
     id: 1,
     name: "SolAce_1",
-    location: "Vidya_Valley"
+    location: "Vidya_Valley",
+    startDate: "2020-02-15"
   },
   {
     id: 2,
     name: "SolAce_2",
-    location: "Ahmednagar"
+    location: "Ahmednagar",
+    startDate: "2020-02-15"
   },
   {
     id: 3,
     name: "SolAce_3",
-    location: "Sindh"
+    location: "Sindh",
+    startDate: "2020-02-15"
   }
 ];
 
@@ -93,7 +96,9 @@ module.exports = {
       return filtered;
     },
     fetchInfo: (ctx, args) => {
-      return { devices: deviceList };
+      return {
+        devices: deviceList
+      };
     },
     searchDevice: (ctx, args) => {
       const filtered = args.query
@@ -149,7 +154,8 @@ fragment CluiOutput on CluiOutput {
     distribution: () => get(COMPONENTS.DISTRIBUTION),
     messages: () => get(COMPONENTS.MESSAGES),
     deviceData: (ctx, args) => deviceData(args.deviceId, args.forDate),
-    dayDeviceData: (ctx, args) => deviceDayData(args.deviceId, args.forDate)
+    dayDeviceData: (ctx, args) => deviceDayData(args.deviceId, args.forDate),
+    weekDeviceData: (ctx, args) => deviceWeekData(args.deviceId, args.forDate)
   },
   Clui: {
     contacts: () => ({}),

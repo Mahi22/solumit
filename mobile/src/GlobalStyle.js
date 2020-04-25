@@ -1,7 +1,6 @@
 import { createGlobalStyle } from "styled-components"
 
 export default createGlobalStyle`
-
 /* http://meyerweb.com/eric/tools/css/reset/
    v2.0 | 20110126
    License: none (public domain)
@@ -62,6 +61,7 @@ html {
   line-height: 1.4;
   font-size: 110%;
   color: hsl(0, 0%, 17%);
+  font-family: 'Roboto', 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 *, *:before, *:after {
@@ -88,6 +88,14 @@ b {
   font-weight: bold !important;
 }
 
+.nice-dates-navigation_current {
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+.nice-dates-day:before {
+  background-color: #F36F21;
+}
 `
 /**
 html 

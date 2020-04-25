@@ -11,6 +11,7 @@ import GlobalStyle from "./GlobalStyle"
 import Today from './pages/Today'
 import Yesterday from './pages/Yesterday'
 import Day from './pages/Day'
+import Week from './pages/Week'
 import Month from './pages/Month'
 import Overall from './pages/Overall'
 
@@ -55,6 +56,7 @@ const MobileWarning = () => {
 
 const routes = [
   { path: "/month", component: Month, title: "Month" },
+  { path: "/week", component: Week, title: "Week" },
   { path: "/day", component: Day, title: "Day" },
   { path: "/yesterday", component: Yesterday, title: "Yesterday" },
   { path: "/", component: Today, title: "Today" },
@@ -132,6 +134,7 @@ function App() {
                       }}
                     >
                       <StyledTab>Month</StyledTab>
+                      <StyledTab>Week</StyledTab>
                       <StyledTab>Day</StyledTab>
                       <StyledTab>Yesterday</StyledTab>
                       <StyledTab>Today</StyledTab>

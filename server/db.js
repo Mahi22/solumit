@@ -10,6 +10,7 @@ const db = knex({
     database: process.env.DB_DATABASE,
     ssl: process.env.DB_SSL,
     multipleStatements: true,
+    timezone: "IST",
     charset: "utf8"
   }
 });

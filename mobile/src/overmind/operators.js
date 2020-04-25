@@ -12,6 +12,18 @@ export const setActiveDevice = () =>
     state.activeDevice = {
       id: device.id,
       name: device.name,
-      location: device.location
+      location: device.location,
+      startDate: device.startDate,
+      endDate: device.endDate
     }
+  })
+
+export const setSelectedDate = () =>
+  mutate(function setSelectedDate({ state }, date) {
+    state.selectedDate = date
+  })
+
+export const setSelectedDateWeek = () =>
+  mutate(function setSelectedDateWeek({ state }, date) {
+    state.selectedDateWeek = date
   })
