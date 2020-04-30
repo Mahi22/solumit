@@ -123,15 +123,15 @@ module.exports = app => {
         if (formatedDateTime.format('DD/MM/YYYY') === selectedDate) {
           const jsonData = JSON.parse(data)
           if (jsonData.name.includes('PFC')) {
-            res.write(`${formatedDateTime.format('DD/MM/YYYY')}\t ${formatedDateTime.format('HH:MM:SS')}\t${data}\t\t\n`)
+            res.write(`${formatedDateTime.format('DD/MM/YYYY')}\t ${formatedDateTime.format('HH:MM:SS')}\tttl=${jsonData.ttl}::${jsonData.data}\t\t\n`)
           }
 
           if (jsonData.name.includes('MP')) {
-            res.write(`${formatedDateTime.format('DD/MM/YYYY')}\t ${formatedDateTime.format('HH:MM:SS')}\t\t${data}\t\n`)
+            res.write(`${formatedDateTime.format('DD/MM/YYYY')}\t ${formatedDateTime.format('HH:MM:SS')}\t\tttl=${jsonData.ttl}::${jsonData.data}\t\n`)
           }
 
           if (jsonData.name.includes('UPS')) {
-            res.write(`${formatedDateTime.format('DD/MM/YYYY')}\t ${formatedDateTime.format('HH:MM:SS')}\t\t\t${data}\n`)
+            res.write(`${formatedDateTime.format('DD/MM/YYYY')}\t ${formatedDateTime.format('HH:MM:SS')}\t\t\tttl=${jsonData.ttl}::${jsonData.data}\n`)
           }
         }
       }
