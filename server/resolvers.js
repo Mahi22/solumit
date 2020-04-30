@@ -312,7 +312,7 @@ fragment CluiOutput on CluiOutput {
           };
         case "excelChange":
           return {
-            success: `http://139.59.37.105:8080/excel?fordate=${fordate.format(
+            success: `http://139.59.37.105:8080/change?fordate=${fordate.format(
               "YYYY/MM/DD"
             )}&deviceId=${args.deviceId}`
           };
