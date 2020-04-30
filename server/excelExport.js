@@ -91,8 +91,8 @@ module.exports = app => {
     const selectedDate = fordate.format('DD/MM/YYYY')
     const filename2 = `device${req.query.deviceId}_change_${fordate.format('DD_MM_YYYY')}.log`;
     const filename1 = `device${req.query.deviceId}_change_${fordate.subtract(1, 'day').format('DD_MM_YYYY')}.log`;
-    const filepath2 = path.join(__dirname, `logs/${filename1}`);
-    const filepath1 = path.join(__dirname, `logs/${filename2}`);
+    const filepath2 = path.join(__dirname, `../worker/logs/${filename1}`);
+    const filepath1 = path.join(__dirname, `../worker/logs/${filename2}`);
     if (fs.existsSync(filepath1) || fs.existsSync(filepath2)) {
       var streams = new MultiStream([
         function testFilePath1() {
