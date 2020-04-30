@@ -10,8 +10,6 @@ import App from "./App"
 
 const overmind = createOvermind(configWithStatechart)
 
-console.log('Loadinggg')
-
 ReactDOM.render(
   <Provider value={overmind}>
     <Router>

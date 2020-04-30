@@ -3,5 +3,7 @@ export const state = {
   devices: [],
   activeDevice: null,
   deviceData: {},
-  selectedDate: null
+  selectedDate: null,
+  selectedDateWeek: null,
+  selectedDateMonth: null
 }

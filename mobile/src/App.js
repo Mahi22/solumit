@@ -55,12 +55,12 @@ const MobileWarning = () => {
 }
 
 const routes = [
-  { path: "/month", component: Month, title: "Month" },
-  { path: "/week", component: Week, title: "Week" },
-  { path: "/day", component: Day, title: "Day" },
-  { path: "/yesterday", component: Yesterday, title: "Yesterday" },
-  { path: "/", component: Today, title: "Today" },
-  { path: "/overall", component: Overall, title: "Overall" },
+  { path: "/app/month", component: Month, title: "Month" },
+  { path: "/app/week", component: Week, title: "Week" },
+  { path: "/app/day", component: Day, title: "Day" },
+  { path: "/app/yesterday", component: Yesterday, title: "Yesterday" },
+  { path: "/app", component: Today, title: "Today" },
+  { path: "/app/overall", component: Overall, title: "Overall" },
 ]
 
 function App() {

@@ -56,3 +56,15 @@ export const weekDeviceData = gql`
     }
   }
 `
+
+export const monthDeviceData = gql`
+  query monthDeviceData($deviceId: String!, $forDate: String!) {
+    monthDeviceData(deviceId: $deviceId, forDate: $forDate) {
+      fortime
+      energy
+      output
+      mains
+      solar
+    }
+  }
+`

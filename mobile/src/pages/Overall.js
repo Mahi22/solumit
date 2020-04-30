@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components'
+import { createHook } from 'overmind-react'
 import moment from 'moment'
 import { Typography } from '@rmwc/typography'
 import { Horizontal } from '../styles'
@@ -19,9 +20,17 @@ const RightDiv = styled(Typography)`
   }
 `
 
+const useOvermind = createHook()
+
 const Overall = () => {
-  const startDay = moment('2020-02-15').startOf('day')
-  const today = moment()
+
+  const { state, reaction, actions } = useOvermind()
+
+  const startDay = state.activeDevice.startDate ? moment(state.activeDevice.startDate) : moment()
+  const today = state.activeDevice.endDate ? moment(state.activeDevice.endDate) : moment()
+
+  // const startDay = moment('2020-02-15').startOf('day')
+  // const today = moment()
 
   return (
     <>

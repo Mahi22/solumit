@@ -1,6 +1,6 @@
 import { pipe } from 'overmind'
 import moment from 'moment'
-import { setActiveDevice, resetDeviceData, setSelectedDate, setSelectedDateWeek } from './operators'
+import { setActiveDevice, resetDeviceData, setSelectedDate, setSelectedDateWeek, setSelectedDateMonth } from './operators'
 
 export const fetchInfo = async ({ state, actions, effects }) => {
   const { fetchInfo } =  await effects.gql.queries.devices()
@@ -29,6 +29,13 @@ export const fetchDeviceWeekData = async ({ state, effects }, forDate) => {
   state.deviceData[`${forDate.format('DD_MM_YY')}_week`] = weekDeviceData
 }
 
+export const fetchDeviceMonthData = async ({ state, effects }, forDate) => {
+  const { monthDeviceData } = await effects.gql.queries.monthDeviceData({ deviceId: state.activeDevice.id, forDate: forDate.toISOString() })
+  state.deviceData[`${forDate.format('DD_MM_YY')}_month`] = monthDeviceData
+}
+
 export const selectDate = setSelectedDate()
 
 export const selectDateWeek = setSelectedDateWeek()
+
+export const selectDateMonth = setSelectedDateMonth()

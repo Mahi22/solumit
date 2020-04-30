@@ -116,6 +116,7 @@ const schema = gql`
     fetchInfo: fetchInfoPayload
     dayDeviceData(deviceId: String!, forDate: String!): [DeviceData]
     weekDeviceData(deviceId: String!, forDate: String!): [DeviceData]
+    monthDeviceData(deviceId: String!, forDate: String!): [DeviceData]
     deviceData(deviceId: String!, forDate: String!): DeviceDataPayload
     clui: Clui!
     command: String!

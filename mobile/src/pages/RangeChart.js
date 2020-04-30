@@ -17,6 +17,7 @@ const EnergyLabel = styled(Typography)`
 
 const EnergyValue = styled(Typography)`
   font-weight: 700;
+  font-size: 42px;
 `
 
 const style = styler([
@@ -25,7 +26,7 @@ const style = styler([
   { key: "output", color: "#BED4EF", highlight: null, selection: null }
 ])
 
-const Chart = ({ data, height, width, forDate = null }) => {
+const Chart = ({ data, height, width, size = 18, offset = 7.5 }) => {
   const [mainsSeries, setMainSeries] = useState(null)
   const [outputSeries, setOutputSeries] = useState(null)
   const [solarSeries, setSolarSeries] = useState(null)
@@ -129,16 +130,16 @@ const Chart = ({ data, height, width, forDate = null }) => {
                 <BarChart
                   axis="mainsAxis"
                   style={style}
-                  size={18}
-                  offset={7.5}
+                  size={size}
+                  offset={offset}
                   columns={["mains"]}
                   series={mainsSeries}
                 />
                 <BarChart
                   axis="mainsAxis"
                   style={style}
-                  size={18}
-                  offset={-7.5}
+                  size={size}
+                  offset={-1 * offset}
                   columns={["solar"]}
                   series={solarSeries}
                 />

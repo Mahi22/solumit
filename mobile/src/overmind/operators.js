@@ -27,3 +27,8 @@ export const setSelectedDateWeek = () =>
   mutate(function setSelectedDateWeek({ state }, date) {
     state.selectedDateWeek = date
   })
+
+export const setSelectedDateMonth = () =>
+  mutate(function setSelectedDateMonth({ state }, date) {
+    state.selectedDateMonth = date
+  })

@@ -1,15 +1,18 @@
+const path = require("path");
+const readline = require("readline");
+const fs = require("fs");
 const Excel = require("exceljs");
 const moment = require("moment");
 const db = require("./db");
+const MultiStream = require("./multistream");
 
 module.exports = app => {
   app.get("/excel", function(req, res) {
-    console.log(req.query);
     const workbook = new Excel.Workbook();
 
     const sheet = workbook.addWorksheet("Data");
 
-    const fileName = "solumExcel.xlsx";
+    const fileName = `solumExcel_device${req.query.deviceId || ''}_${Date.now()}.xlsx`;
 
     sheet.columns = [
       { header: "Date", key: "fordate" },
@@ -38,8 +41,8 @@ module.exports = app => {
         "fortime",
         ">=",
         moment(req.query.startDate)
+          // .add("5.5", "hours")
           .startOf("day")
-          // .subtract("5.5", "hours")
           .toISOString()
       );
     }
@@ -81,5 +84,61 @@ module.exports = app => {
           res.end();
         });
     });
+  });
+
+  app.get("/change", async function(req, res) {
+    const fordate = moment(new Date(req.query.fordate))
+    const selectedDate = fordate.format('DD/MM/YYYY')
+    const filename2 = `device${req.query.deviceId}_change_${fordate.format('DD_MM_YYYY')}.log`;
+    const filename1 = `device${req.query.deviceId}_change_${fordate.subtract(1, 'day').format('DD_MM_YYYY')}.log`;
+    const filepath2 = path.join(__dirname, `logs/${filename1}`);
+    const filepath1 = path.join(__dirname, `logs/${filename2}`);
+    if (fs.existsSync(filepath1) || fs.existsSync(filepath2)) {
+      var streams = new MultiStream([
+        function testFilePath1() {
+          if (fs.existsSync(filepath1)) {
+            return fs.createReadStream(filepath1)
+          }
+          return null
+        },
+        function testFilePath2() {
+          if (fs.existsSync(filepath2)) {
+            return fs.createReadStream(filepath2)
+          }
+          return null
+        },
+      ])
+      const rl = readline.createInterface({
+        input: streams,
+        crlfDelay: Infinity
+      });
+
+      res.setHeader('Content-Type', 'text/tsv');
+      res.setHeader('Content-Disposition', 'attachment; filename=\"' + `device${req.query.deviceId}-` + Date.now() + '.tsv\"');
+      res.write("DATE\tTIME\tPFC\tMPPT\tUPS\n")
+      for await (const row of rl) {
+        const [datetime, data] = row.split(" -> ");
+        const formatedDateTime = moment(new Date(datetime)).add(5, 'hours').add(30, 'minutes');
+
+        if (formatedDateTime.format('DD/MM/YYYY') === selectedDate) {
+          const jsonData = JSON.parse(data)
+          if (jsonData.name.includes('PFC')) {
+            res.write(`${formatedDateTime.format('DD/MM/YYYY')}\t ${formatedDateTime.format('HH:MM:SS')}\t${data}\t\t\n`)
+          }
+
+          if (jsonData.name.includes('MP')) {
+            res.write(`${formatedDateTime.format('DD/MM/YYYY')}\t ${formatedDateTime.format('HH:MM:SS')}\t\t${data}\t\n`)
+          }
+
+          if (jsonData.name.includes('UPS')) {
+            res.write(`${formatedDateTime.format('DD/MM/YYYY')}\t ${formatedDateTime.format('HH:MM:SS')}\t\t\t${data}\n`)
+          }
+        }
+      }
+      res.end()
+    } else {
+      res.send("FILE DOES NOT EXISTS")
+    }
+    // console.log(filepath);
   });
 };

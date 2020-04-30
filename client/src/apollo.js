@@ -16,8 +16,6 @@ const fragmentMatcher = new IntrospectionFragmentMatcher({
 
 const SERVER = process.env.NODE_ENV === 'development' ? 'localhost' : '139.59.37.105';
 
-console.log(SERVER);
-
 // Create a WebSocket link:
 const wsLink = new WebSocketLink({
   uri: `ws://${SERVER}:8080/graphql`,

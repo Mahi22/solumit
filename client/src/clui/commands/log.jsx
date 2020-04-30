@@ -104,6 +104,7 @@ const Device = props => {
         <select required onChange={e => setType(e.target.value)}>
           <option value="excel">Energy Excel</option>
           <option value="changeLogs">Change Logs</option>
+          <option value="excelChange">Change Logs Excel</option>
           <option value="allLogs">All Logs</option>
         </select>
       </div>

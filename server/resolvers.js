@@ -11,7 +11,12 @@ const {
   trafficData
 } = require("./utils/generator");
 const { get, set } = require("./utils/redis");
-const { deviceData, deviceDayData, deviceWeekData } = require("./deviceData");
+const {
+  deviceData,
+  deviceDayData,
+  deviceWeekData,
+  deviceMonthData
+} = require("./deviceData");
 
 // const db = knex({
 //   client: process.env.DB_CLIENT || "pg",
@@ -155,7 +160,8 @@ fragment CluiOutput on CluiOutput {
     messages: () => get(COMPONENTS.MESSAGES),
     deviceData: (ctx, args) => deviceData(args.deviceId, args.forDate),
     dayDeviceData: (ctx, args) => deviceDayData(args.deviceId, args.forDate),
-    weekDeviceData: (ctx, args) => deviceWeekData(args.deviceId, args.forDate)
+    weekDeviceData: (ctx, args) => deviceWeekData(args.deviceId, args.forDate),
+    monthDeviceData: (ctx, args) => deviceMonthData(args.deviceId, args.forDate)
   },
   Clui: {
     contacts: () => ({}),
@@ -294,28 +300,33 @@ fragment CluiOutput on CluiOutput {
     distribution: () => publishRandomData(regionData, COMPONENTS.DISTRIBUTION),
     messages: () => publishRandomData(messageData, COMPONENTS.MESSAGES),
     logRequest: async (ctx, args) => {
-      console.log(args);
+      const fordate = moment(args.date);
       switch (args.type) {
         case "excel":
-          const fordate = moment(args.date).toISOString();
           return {
-            success: `http://139.59.37.105:8080/excel?startDate=${fordate}&endDate=${fordate}&deviceId=${
+            success: `http://139.59.37.105:8080/excel?startDate=${fordate.format(
+              "YYYY/MM/DD"
+            )}&endDate=${fordate.format("YYYY/MM/DD")}&deviceId=${
               args.deviceId
             }`
           };
+        case "excelChange":
+          return {
+            success: `http://139.59.37.105:8080/excel?fordate=${fordate.format(
+              "YYYY/MM/DD"
+            )}&deviceId=${args.deviceId}`
+          };
         case "changeLogs":
-          const changeLogdate = moment(args.date).format("DD_MM_YYYY");
           return {
             success: `http://139.59.37.105:8080/logs/device${
               args.deviceId
-            }_change_${changeLogdate}.log`
+            }_change_${fordate.format("DD_MM_YYYY")}.log`
           };
         case "allLogs":
-          const logdate = moment(args.date).format("DD_MM_YYYY");
           return {
             success: `http://139.59.37.105:8080/logs/device${
               args.deviceId
-            }_${logdate}.log`
+            }_${fordate.format("DD_MM_YYYY")}.log`
           };
         default:
           return { error: "Params missing" };
