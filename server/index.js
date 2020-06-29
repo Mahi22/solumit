@@ -60,13 +60,12 @@ var options = {
   }
 };
 
-// app.use("/app", express.static(path.join(__dirname, "../mobile/build")));
-
-app.get("/app/*", function(req, res) {
-  res.sendFile("index.html", {
-    root: path.join(__dirname, "../mobile/build/")
-  });
-});
+// app.use("/app/", express.static(path.join(__dirname, "../mobile/build")));
+// app.get("/app/*", function(req, res) {
+//   res.sendFile("index.html", {
+//     root: path.join(__dirname, "../mobile/build/")
+//   });
+// });
 
 app.use("/", express.static(path.join(__dirname, "../client/build")));
 app.get("*", function(req, res) {

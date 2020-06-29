@@ -22,7 +22,7 @@ function deviceDayData(deviceId, forDate) {
   const queryBuilder = db(`device${deviceId}`)
     .select(
       db.raw(
-        `time_bucket('2 hours', fortime) as index, avg(ups_opv) as ups_opv, avg(ups_lt) as ups_lt, avg(pfc_vb) as pfc_vb, avg(pfc_io) as pfc_io, avg(mp1_vb) as mp1_vb, avg(pfc_io) as pfc_io, avg(mp1_vb) as mp1_vb, avg(mp1_io)  as mp1_io`
+        `time_bucket('2 hours', fortime) as index, avg(ups_opv) as ups_opv, avg(ups_lt) as ups_lt, avg(pfc_vb) as pfc_vb, avg(pfc_io) as pfc_io, avg(mp1_vb) as mp1_vb, avg(pfc_io) as pfc_io, avg(mp1_vb) as mp1_vb, avg(mp1_io)  as mp1_io, sum(ups_opv * ups_lt * 30 / 3600000) as energy`
       )
     )
     .whereBetween("fortime", [
@@ -42,16 +42,19 @@ function deviceDayData(deviceId, forDate) {
   client.query(stream);
 
   const streamData = fromNodeStream(stream).pipe(
-    map(({ index, ups_opv, ups_lt, pfc_vb, pfc_io, mp1_vb, mp1_io }) => ({
-      fortime: moment(index)
-        .add(30, "minutes")
-        .utcOffset("+5:30"),
-      // fortime: index,
-      energy: (multiplyNumbers(ups_opv, ups_lt) * 30 * 240) / 3600000,
-      output: multiplyNumbers(ups_opv, ups_lt),
-      mains: multiplyNumbers(pfc_vb, pfc_io),
-      solar: multiplyNumbers(mp1_vb, mp1_io)
-    }))
+    // tap(console.log),
+    map(
+      ({ index, ups_opv, ups_lt, pfc_vb, pfc_io, mp1_vb, mp1_io, energy }) => ({
+        fortime: moment(index)
+          .add(30, "minutes")
+          .utcOffset("+5:30"),
+        // fortime: index,
+        energy, // (multiplyNumbers(ups_opv, ups_lt) * 30 * 240) / 3600000,
+        output: multiplyNumbers(ups_opv, ups_lt),
+        mains: multiplyNumbers(pfc_vb, pfc_io),
+        solar: multiplyNumbers(mp1_vb, mp1_io)
+      })
+    )
   );
 
   return toArray(streamData);
@@ -63,7 +66,7 @@ function deviceWeekData(deviceId, forDate) {
   const queryBuilder = db(`device${deviceId}`)
     .select(
       db.raw(
-        `time_bucket('1 day', fortime) as index, avg(ups_opv) as ups_opv, avg(ups_lt) as ups_lt, avg(pfc_vb) as pfc_vb, avg(pfc_io) as pfc_io, avg(mp1_vb) as mp1_vb, avg(pfc_io) as pfc_io, avg(mp1_vb) as mp1_vb, avg(mp1_io)  as mp1_io`
+        `time_bucket('1 day', fortime) as index, avg(ups_opv) as ups_opv, avg(ups_lt) as ups_lt, avg(pfc_vb) as pfc_vb, avg(pfc_io) as pfc_io, avg(mp1_vb) as mp1_vb, avg(pfc_io) as pfc_io, avg(mp1_vb) as mp1_vb, avg(mp1_io)  as mp1_io, sum(ups_opv * ups_lt * 30 / 3600000) as energy`
       )
     )
     .whereBetween("fortime", [
@@ -87,16 +90,18 @@ function deviceWeekData(deviceId, forDate) {
 
   const streamData = fromNodeStream(stream).pipe(
     // tap(console.log),
-    map(({ index, ups_opv, ups_lt, pfc_vb, pfc_io, mp1_vb, mp1_io }) => ({
-      fortime: moment(index),
-      // .add(30, "minutes")
-      // .utcOffset("+5:30"),
-      // fortime: index,
-      energy: (multiplyNumbers(ups_opv, ups_lt) * 30 * 120 * 24) / 3600000,
-      output: multiplyNumbers(ups_opv, ups_lt),
-      mains: multiplyNumbers(pfc_vb, pfc_io),
-      solar: multiplyNumbers(mp1_vb, mp1_io)
-    }))
+    map(
+      ({ index, ups_opv, ups_lt, pfc_vb, pfc_io, mp1_vb, mp1_io, energy }) => ({
+        fortime: moment(index),
+        // .add(30, "minutes")
+        // .utcOffset("+5:30"),
+        // fortime: index,
+        energy, // : (multiplyNumbers(ups_opv, ups_lt) * 30 * 120 * 24) / 3600000,
+        output: multiplyNumbers(ups_opv, ups_lt),
+        mains: multiplyNumbers(pfc_vb, pfc_io),
+        solar: multiplyNumbers(mp1_vb, mp1_io)
+      })
+    )
   );
 
   return toArray(streamData);
@@ -110,7 +115,7 @@ function deviceMonthData(deviceId, forDate) {
   const queryBuilder = db(`device${deviceId}`)
     .select(
       db.raw(
-        `time_bucket('1 day', fortime) as index, avg(ups_opv) as ups_opv, avg(ups_lt) as ups_lt, avg(pfc_vb) as pfc_vb, avg(pfc_io) as pfc_io, avg(mp1_vb) as mp1_vb, avg(pfc_io) as pfc_io, avg(mp1_vb) as mp1_vb, avg(mp1_io)  as mp1_io`
+        `time_bucket('1 day', fortime) as index, avg(ups_opv) as ups_opv, avg(ups_lt) as ups_lt, avg(pfc_vb) as pfc_vb, avg(pfc_io) as pfc_io, avg(mp1_vb) as mp1_vb, avg(pfc_io) as pfc_io, avg(mp1_vb) as mp1_vb, avg(mp1_io)  as mp1_io, sum(ups_opv * ups_lt * 30 / 3600000) as energy`
       )
     )
     .whereBetween("fortime", [monthStart.toISOString(), monthEnd.toISOString()])
@@ -128,16 +133,18 @@ function deviceMonthData(deviceId, forDate) {
 
   const streamData = fromNodeStream(stream).pipe(
     // tap(console.log),
-    map(({ index, ups_opv, ups_lt, pfc_vb, pfc_io, mp1_vb, mp1_io }) => ({
-      fortime: moment(index),
-      // .add(30, "minutes")
-      // .utcOffset("+5:30"),
-      // fortime: index,
-      energy: (multiplyNumbers(ups_opv, ups_lt) * 30 * 120 * 24) / 3600000,
-      output: multiplyNumbers(ups_opv, ups_lt),
-      mains: multiplyNumbers(pfc_vb, pfc_io),
-      solar: multiplyNumbers(mp1_vb, mp1_io)
-    }))
+    map(
+      ({ index, ups_opv, ups_lt, pfc_vb, pfc_io, mp1_vb, mp1_io, energy }) => ({
+        fortime: moment(index),
+        // .add(30, "minutes")
+        // .utcOffset("+5:30"),
+        // fortime: index,
+        energy, // (multiplyNumbers(ups_opv, ups_lt) * 30 * 120 * 24) / 3600000,
+        output: multiplyNumbers(ups_opv, ups_lt),
+        mains: multiplyNumbers(pfc_vb, pfc_io),
+        solar: multiplyNumbers(mp1_vb, mp1_io)
+      })
+    )
   );
 
   return toArray(streamData);
